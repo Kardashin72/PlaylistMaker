@@ -6,30 +6,47 @@
     android:backgroundTint="@color/YP_White"
     android:orientation="vertical">
 
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:layout_marginStart="@dimen/margin_side"
+        android:layout_height="0dp"
         android:layout_marginTop="@dimen/margin_top"
-        android:text="@string/text_settings"
-        android:textColor="@color/YP_Black"
-        android:textSize="22sp"
-        android:textStyle="bold" />
+        android:layout_weight="1"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/settings_back"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:backgroundTint="@color/YP_White"
+            app:icon="@drawable/arrow_back"
+            app:iconTint="@color/YP_Black"
+            android:gravity="start|center_vertical" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="5"
+            android:text="@string/text_settings"
+            android:textColor="@color/YP_Black"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:gravity="center_vertical|start"/>
+    </LinearLayout>
+
 
     <androidx.appcompat.widget.SwitchCompat
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginStart="@dimen/margin_side"
-        android:layout_marginEnd="@dimen/margin_side"
+        android:layout_marginEnd="12dp"
         android:layout_weight="1"
         android:checked="false"
-
         android:text="@string/text_switch_dark_theme"
         android:textColor="@color/YP_Black"
         android:textSize="@dimen/settings_buttons_font_size"
-
         app:thumbTint="@color/switch_thumb_color"
-        app:trackTint="@color/switch_track_color"/>
+        app:trackTint="@color/switch_track_color" />
 
     <Button
         android:layout_width="match_parent"
@@ -43,7 +60,7 @@
         android:textSize="@dimen/settings_buttons_font_size"
         app:icon="@drawable/share_icon"
         app:iconGravity="end"
-        app:iconTint="@color/YP_Text_gray"/>
+        app:iconTint="@color/YP_Text_gray" />
 
     <Button
         android:layout_width="match_parent"
@@ -79,9 +96,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="6">
-
-    </View>
+        android:layout_weight="6"></View>
 
     <LinearLayout
         style="?android:attr/buttonBarStyle"
@@ -97,14 +112,14 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:backgroundTint="@color/YP_White"
-            app:icon="@drawable/search_icon"
-            app:iconTint="@color/YP_Black"
-            app:iconGravity="textTop"
+            android:gravity="center_horizontal"
             android:text="@string/text_search"
+            android:textAllCaps="false"
             android:textColor="@color/YP_Black"
             android:textSize="12sp"
-            android:textAllCaps="false"
-            android:gravity="center_horizontal" />
+            app:icon="@drawable/search_icon"
+            app:iconGravity="textTop"
+            app:iconTint="@color/YP_Black" />
 
         <Button
             style="?android:attr/buttonBarButtonStyle"
@@ -112,14 +127,14 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:backgroundTint="@color/YP_White"
-            app:icon="@drawable/media_library_icon"
-            app:iconTint="@color/YP_Black"
-            app:iconGravity="textTop"
+            android:gravity="center_horizontal"
             android:text="@string/text_media_library"
+            android:textAllCaps="false"
             android:textColor="@color/YP_Black"
             android:textSize="12sp"
-            android:textAllCaps="false"
-            android:gravity="center_horizontal" />
+            app:icon="@drawable/media_library_icon"
+            app:iconGravity="textTop"
+            app:iconTint="@color/YP_Black" />
 
         <Button
             style="?android:attr/buttonBarButtonStyle"
@@ -127,14 +142,13 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:backgroundTint="@color/YP_White"
-            app:icon="@drawable/settings_icon"
-            app:iconTint="@color/YP_Blue"
-            app:iconGravity="textTop"
+            android:gravity="center_horizontal"
             android:text="@string/text_settings"
+            android:textAllCaps="false"
             android:textColor="@color/YP_Blue"
             android:textSize="12sp"
-            android:textAllCaps="false"
-            android:gravity="center_horizontal"/>
+            app:icon="@drawable/settings_icon"
+            app:iconGravity="textTop"
+            app:iconTint="@color/YP_Blue" />
     </LinearLayout>
 </LinearLayout>
-

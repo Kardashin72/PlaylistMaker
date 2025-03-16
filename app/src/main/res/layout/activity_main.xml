@@ -36,7 +36,7 @@
         app:iconGravity="textStart"
         app:iconPadding="@dimen/icon_padding"
         app:iconTint="@color/YP_Black"
-
+        android:foreground="?attr/selectableItemBackground"
         >
     </Button>
 
@@ -58,7 +58,7 @@
         app:iconGravity="textStart"
         app:iconPadding="@dimen/icon_padding"
         app:iconTint="@color/YP_Black"
-
+        android:foreground="?attr/selectableItemBackground"
         >
     </Button>
 
@@ -82,6 +82,7 @@
         app:iconGravity="textStart"
         app:iconPadding="@dimen/icon_padding"
         app:iconTint="@color/YP_Black"
+        android:foreground="?attr/selectableItemBackground"
         >
     </Button>
 
