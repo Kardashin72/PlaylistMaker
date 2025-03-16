@@ -19,6 +19,7 @@
     </TextView>
 
     <Button
+        android:id="@+id/search_but"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
@@ -40,6 +41,7 @@
     </Button>
 
     <Button
+        android:id="@+id/media_library_button"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
@@ -61,6 +63,7 @@
     </Button>
 
     <Button
+        android:id="@+id/settings_button"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"

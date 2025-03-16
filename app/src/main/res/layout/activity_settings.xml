@@ -14,17 +14,20 @@
         android:text="@string/text_settings"
         android:textColor="@color/YP_Black"
         android:textSize="22sp"
-        android:textStyle="bold"/>
+        android:textStyle="bold" />
 
     <androidx.appcompat.widget.SwitchCompat
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginStart="@dimen/margin_side"
+        android:layout_marginEnd="@dimen/margin_side"
         android:layout_weight="1"
         android:checked="false"
+
         android:text="@string/text_switch_dark_theme"
         android:textColor="@color/YP_Black"
         android:textSize="@dimen/settings_buttons_font_size"
+
         app:thumbTint="@color/switch_thumb_color"
         app:trackTint="@color/switch_track_color"/>
 
@@ -52,6 +55,7 @@
         android:textAllCaps="false"
         android:textColor="@color/YP_Black"
         android:textSize="@dimen/settings_buttons_font_size"
+
         app:icon="@drawable/support_icon"
         app:iconGravity="end"
         app:iconTint="@color/YP_Text_gray">
@@ -80,6 +84,7 @@
     </View>
 
     <LinearLayout
+        style="?android:attr/buttonBarStyle"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_gravity="bottom"
@@ -87,6 +92,7 @@
         android:orientation="horizontal">
 
         <Button
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -98,9 +104,10 @@
             android:textColor="@color/YP_Black"
             android:textSize="12sp"
             android:textAllCaps="false"
-            android:gravity="center_horizontal"/>
+            android:gravity="center_horizontal" />
 
         <Button
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -112,9 +119,10 @@
             android:textColor="@color/YP_Black"
             android:textSize="12sp"
             android:textAllCaps="false"
-            android:gravity="center_horizontal"/>
+            android:gravity="center_horizontal" />
 
         <Button
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
