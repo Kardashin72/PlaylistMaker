@@ -14,8 +14,8 @@
         android:textColor="@color/YP_White"
         android:textSize="@dimen/main_font_size"
         android:textStyle="bold"
-        android:layout_marginTop="@dimen/margin_top"
-        android:layout_marginStart="@dimen/margin_side">
+        android:layout_marginTop="@dimen/margin_vertical"
+        android:layout_marginStart="@dimen/margin_horizontal">
     </TextView>
 
     <Button
@@ -23,8 +23,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:layout_marginStart="@dimen/margin_side"
-        android:layout_marginEnd="@dimen/margin_side"
+        android:layout_marginHorizontal="@dimen/margin_horizontal"
         android:layout_marginTop="24dp"
         android:backgroundTint="@color/YP_White"
         app:cornerRadius="@dimen/corner_radius"
@@ -45,9 +44,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:layout_marginTop="@dimen/margin_top"
-        android:layout_marginStart="@dimen/margin_side"
-        android:layout_marginEnd="@dimen/margin_side"
+        android:layout_marginTop="@dimen/margin_vertical"
+        android:layout_marginHorizontal="@dimen/margin_horizontal"
         android:backgroundTint="@color/YP_White"
         app:cornerRadius="@dimen/corner_radius"
         android:text="@string/text_media_library"
@@ -67,10 +65,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:layout_marginTop="@dimen/margin_top"
-        android:layout_marginStart="@dimen/margin_side"
-        android:layout_marginEnd="@dimen/margin_side"
-        android:layout_marginBottom="24dp"
+        android:layout_marginVertical="@dimen/margin_vertical"
+        android:layout_marginHorizontal="@dimen/margin_horizontal"
         android:backgroundTint="@color/YP_White"
         app:cornerRadius="@dimen/corner_radius"
         android:text="@string/text_settings"

@@ -9,7 +9,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="@dimen/margin_top"
+        android:layout_marginTop="@dimen/margin_vertical"
         android:layout_weight="1"
         android:orientation="horizontal">
 
@@ -19,6 +19,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:backgroundTint="@color/YP_White"
+            android:stateListAnimator="@null"
             app:icon="@drawable/arrow_back"
             app:iconTint="@color/YP_Black"
             android:gravity="start|center_vertical" />
@@ -38,10 +39,11 @@
     <androidx.appcompat.widget.SwitchCompat
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginStart="@dimen/margin_side"
+        android:layout_marginStart="@dimen/margin_horizontal"
         android:layout_marginEnd="12dp"
         android:layout_weight="1"
         android:checked="false"
+        android:stateListAnimator="@null"
         android:text="@string/text_switch_dark_theme"
         android:textColor="@color/YP_Black"
         android:textSize="@dimen/settings_buttons_font_size"
@@ -58,6 +60,7 @@
         android:textAllCaps="false"
         android:textColor="@color/YP_Black"
         android:textSize="@dimen/settings_buttons_font_size"
+        android:stateListAnimator="@null"
         app:icon="@drawable/share_icon"
         app:iconGravity="end"
         app:iconTint="@color/YP_Text_gray" />
@@ -72,7 +75,7 @@
         android:textAllCaps="false"
         android:textColor="@color/YP_Black"
         android:textSize="@dimen/settings_buttons_font_size"
-
+        android:stateListAnimator="@null"
         app:icon="@drawable/support_icon"
         app:iconGravity="end"
         app:iconTint="@color/YP_Text_gray">
@@ -89,14 +92,15 @@
         android:textAllCaps="false"
         android:textColor="@color/YP_Black"
         android:textSize="@dimen/settings_buttons_font_size"
+        android:stateListAnimator="@null"
         app:icon="@drawable/arrow_forward_icon"
         app:iconGravity="end"
         app:iconTint="@color/YP_Text_gray" />
 
-    <View
+    <Space
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="6"></View>
+        android:layout_weight="6"/>
 
     <LinearLayout
         style="?android:attr/buttonBarStyle"
@@ -112,11 +116,12 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:backgroundTint="@color/YP_White"
-            android:gravity="center_horizontal"
+            android:gravity="center"
+            android:stateListAnimator="@null"
             android:text="@string/text_search"
             android:textAllCaps="false"
             android:textColor="@color/YP_Black"
-            android:textSize="12sp"
+            android:textSize="@dimen/small_text_size"
             app:icon="@drawable/search_icon"
             app:iconGravity="textTop"
             app:iconTint="@color/YP_Black" />
@@ -131,7 +136,7 @@
             android:text="@string/text_media_library"
             android:textAllCaps="false"
             android:textColor="@color/YP_Black"
-            android:textSize="12sp"
+            android:textSize="@dimen/small_text_size"
             app:icon="@drawable/media_library_icon"
             app:iconGravity="textTop"
             app:iconTint="@color/YP_Black" />
@@ -146,7 +151,7 @@
             android:text="@string/text_settings"
             android:textAllCaps="false"
             android:textColor="@color/YP_Blue"
-            android:textSize="12sp"
+            android:textSize="@dimen/small_text_size"
             app:icon="@drawable/settings_icon"
             app:iconGravity="textTop"
             app:iconTint="@color/YP_Blue" />
