@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Цвет дорожки, когда переключатель включен -->
+    <item android:color="@color/YP_Blue_light" android:state_checked="true" />
+
+    <!-- Цвет дорожки, когда переключатель выключен -->
+    <item android:color="@color/YP_Light_gray" />
+</selector>

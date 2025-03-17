@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:backgroundTint="@color/YP_White"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/margin_vertical"
+        android:layout_weight="1"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/settings_back"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:backgroundTint="@color/YP_White"
+            android:stateListAnimator="@null"
+            app:icon="@drawable/arrow_back"
+            app:iconTint="@color/YP_Black"
+            android:gravity="start|center_vertical" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="5"
+            android:text="@string/text_settings"
+            android:textColor="@color/YP_Black"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:gravity="center_vertical|start"/>
+    </LinearLayout>
+
+
+    <androidx.appcompat.widget.SwitchCompat
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginStart="@dimen/margin_horizontal"
+        android:layout_marginEnd="12dp"
+        android:layout_weight="1"
+        android:checked="false"
+        android:stateListAnimator="@null"
+        android:text="@string/text_switch_dark_theme"
+        android:textColor="@color/YP_Black"
+        android:textSize="@dimen/settings_buttons_font_size"
+        app:thumbTint="@color/switch_thumb_color"
+        app:trackTint="@color/switch_track_color" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:backgroundTint="@color/YP_White"
+        android:gravity="start|center_vertical"
+        android:text="@string/text_share_app"
+        android:textAllCaps="false"
+        android:textColor="@color/YP_Black"
+        android:textSize="@dimen/settings_buttons_font_size"
+        android:stateListAnimator="@null"
+        app:icon="@drawable/share_icon"
+        app:iconGravity="end"
+        app:iconTint="@color/YP_Text_gray" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:backgroundTint="@color/YP_White"
+        android:gravity="start|center_vertical"
+        android:text="@string/text_write_to_support"
+        android:textAllCaps="false"
+        android:textColor="@color/YP_Black"
+        android:textSize="@dimen/settings_buttons_font_size"
+        android:stateListAnimator="@null"
+        app:icon="@drawable/support_icon"
+        app:iconGravity="end"
+        app:iconTint="@color/YP_Text_gray">
+
+    </Button>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:backgroundTint="@color/YP_White"
+        android:gravity="start|center_vertical"
+        android:text="@string/text_user_agreement"
+        android:textAllCaps="false"
+        android:textColor="@color/YP_Black"
+        android:textSize="@dimen/settings_buttons_font_size"
+        android:stateListAnimator="@null"
+        app:icon="@drawable/arrow_forward_icon"
+        app:iconGravity="end"
+        app:iconTint="@color/YP_Text_gray" />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="6"/>
+
+    <LinearLayout
+        style="?android:attr/buttonBarStyle"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_gravity="bottom"
+        android:layout_weight="1"
+        android:orientation="horizontal">
+
+        <Button
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:backgroundTint="@color/YP_White"
+            android:gravity="center"
+            android:stateListAnimator="@null"
+            android:text="@string/text_search"
+            android:textAllCaps="false"
+            android:textColor="@color/YP_Black"
+            android:textSize="@dimen/small_text_size"
+            app:icon="@drawable/search_icon"
+            app:iconGravity="textTop"
+            app:iconTint="@color/YP_Black" />
+
+        <Button
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:backgroundTint="@color/YP_White"
+            android:gravity="center_horizontal"
+            android:text="@string/text_media_library"
+            android:textAllCaps="false"
+            android:textColor="@color/YP_Black"
+            android:textSize="@dimen/small_text_size"
+            app:icon="@drawable/media_library_icon"
+            app:iconGravity="textTop"
+            app:iconTint="@color/YP_Black" />
+
+        <Button
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:backgroundTint="@color/YP_White"
+            android:gravity="center_horizontal"
+            android:text="@string/text_settings"
+            android:textAllCaps="false"
+            android:textColor="@color/YP_Blue"
+            android:textSize="@dimen/small_text_size"
+            app:icon="@drawable/settings_icon"
+            app:iconGravity="textTop"
+            app:iconTint="@color/YP_Blue" />
+    </LinearLayout>
+</LinearLayout>
