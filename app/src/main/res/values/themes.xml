@@ -14,5 +14,8 @@
 
         <!-- Цвет строки состояния -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+
+        <item name="colorSearchBackground">@color/YP_Light_gray</item>
+        <item name="colorSearchHintText">@color/YP_Text_gray</item>
     </style>
 </resources>

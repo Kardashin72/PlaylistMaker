@@ -7,4 +7,5 @@
     <dimen name="main_font_size">22sp</dimen>
     <dimen name="settings_buttons_font_size">16sp</dimen>
     <dimen name="small_text_size">12sp</dimen>
+    <dimen name="boxCornerRadius">8dp</dimen>
 </resources>
