@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity
 class SearchActivity : AppCompatActivity() {
     //переменная объявлена вне функции onCreate, чтобы доступ к ней был в функции onSaveInstanceState
     private lateinit var searchEditText: EditText
+    private var savedText = ""
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,7 +46,7 @@ class SearchActivity : AppCompatActivity() {
             }
 
             override fun afterTextChanged(s: Editable?) {
-                //заглушка
+                savedText = s?.toString() ?: ""
             }
         }
         searchEditText.addTextChangedListener(searchTextWatcher)
@@ -61,7 +62,7 @@ class SearchActivity : AppCompatActivity() {
     //восстановление строки ввода из сохраненного Bundle
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        val savedText = savedInstanceState.getString("EDIT_TEXT_KEY") ?: ""
+        savedText = savedInstanceState.getString("EDIT_TEXT_KEY") ?: ""
         val cursorPosition = savedInstanceState.getInt("CURSOR_POSITION", 0)
         searchEditText.setText(savedText)
         searchEditText.setSelection(cursorPosition.coerceIn(0, savedText.length))

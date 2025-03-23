@@ -3,9 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="?attr/colorPrimary"
-    >
+    android:orientation="vertical">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -14,68 +14,64 @@
 
         <Button
             android:id="@+id/search_back_buttton"
+            style="@style/SettingsMenuButtonsStyle"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             app:icon="@drawable/arrow_back"
-            app:iconTint="?attr/colorOnPrimary"
             app:iconGravity="start"
-            style="@style/SettingsMenuButtonsStyle">
-        </Button>
+            app:iconTint="?attr/colorOnPrimary"></Button>
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="5"
+            android:fontFamily="@font/ys_display_medium"
+            android:gravity="center_vertical|start"
             android:text="@string/text_search"
             android:textColor="?attr/colorOnPrimary"
-            android:textSize="22sp"
-            android:fontFamily="@font/ys_display_medium"
             android:textFontWeight="500"
-            android:gravity="center_vertical|start">
-        </TextView>
+            android:textSize="22sp"></TextView>
     </LinearLayout>
 
-    <LinearLayout
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="@integer/search_edit_text_weight"
-        android:orientation="horizontal"
         android:layout_marginHorizontal="@dimen/margin_horizontal"
+        android:layout_weight="@integer/search_edit_text_weight"
         android:background="@drawable/edit_search_background">
 
         <EditText
             android:id="@+id/search_edit_text"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="9"
             android:background="@drawable/stroke_width"
             android:drawableStart="@drawable/small_search_icon"
+            android:drawablePadding="8dp"
             android:drawableTint="?attr/colorSearchHintText"
-            android:paddingStart="@dimen/margin_horizontal"
-            android:hint="@string/text_search"
-            android:textColorHint="?attr/colorSearchHintText"
             android:fontFamily="@font/ys_display_regular"
-            android:textFontWeight="400"
-            android:drawablePadding="8dp">
-        </EditText>
+            android:hint="@string/text_search"
+            android:paddingStart="@dimen/margin_horizontal"
+            android:paddingEnd="56dp"
+            android:textColorHint="?attr/colorSearchHintText"
+            android:textFontWeight="400" />
 
         <Button
             android:id="@+id/clear_text_button"
-            android:layout_width="0dp"
+            android:layout_width="48dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@android:color/transparent"
-            android:drawableTop="@drawable/cross"
-            android:drawableTint="?attr/colorSearchHintText"
+            android:layout_gravity="end"
             android:gravity="center"
-            android:visibility="gone">
-        </Button>
-    </LinearLayout>
+            android:paddingEnd="@dimen/margin_horizontal"
+            android:background="@android:color/transparent"
+            android:drawableRight="@drawable/cross"
+            android:drawableTint="?attr/colorSearchHintText"
+            android:visibility="gone" />
+    </FrameLayout>
 
     <Space
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="10"/>
+        android:layout_weight="10" />
 
 </LinearLayout>
