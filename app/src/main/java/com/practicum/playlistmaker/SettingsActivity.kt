@@ -31,10 +31,19 @@ class SettingsActivity : AppCompatActivity() {
             startActivity(chooser)
         }
 
+        //изначально пытался сделать через
+        //     val supportIntent = Intent(Intent.ACTION_SENDTO).apply {
+        //         data = Uri.parse("mailto:${getString(R.string.support_email)}")
+        //         putExtra(Intent.EXTRA_SUBJECT, getString(R.string.support_message_topic))
+        //         putExtra(Intent.EXTRA_TEXT, getString(R.string.support_message))
+        //     }
+        //но этот вариант на моем смартфоне стабильно выдавал Toast-заглушку, хотя есть Gmail по умолчанию
+        //текущий вариант работает через выбор приложения
         val supportButton = findViewById<Button>(R.id.supportButton)
         supportButton.setOnClickListener {
-            val supportIntent = Intent(Intent.ACTION_SENDTO).apply {
-                data = Uri.parse("mailto:${getString(R.string.support_email)}")
+            val supportIntent = Intent(Intent.ACTION_SEND).apply {
+                type = "message/rfc822"
+                putExtra(Intent.EXTRA_EMAIL, arrayOf(getString(R.string.support_email)))
                 putExtra(Intent.EXTRA_SUBJECT, getString(R.string.support_message_topic))
                 putExtra(Intent.EXTRA_TEXT, getString(R.string.support_message))
             }
