@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="search_edit_text_weight" type="integer">1</item>
+    <item name="settings_buttons_weight" type="integer">2</item>
+</resources>

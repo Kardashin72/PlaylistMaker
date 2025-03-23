@@ -8,4 +8,6 @@
     <dimen name="settings_buttons_font_size">16sp</dimen>
     <dimen name="small_text_size">12sp</dimen>
     <dimen name="boxCornerRadius">8dp</dimen>
+    <item name="search_edit_text_weight" type="integer">0.5</item>
+    <item name="settings_buttons_weight" type="integer">1</item>
 </resources>
