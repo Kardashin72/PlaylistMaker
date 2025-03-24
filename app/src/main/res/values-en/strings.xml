@@ -10,6 +10,5 @@
     <string name="support_message_topic">Message to the developers of the Playlist Maker app</string>
     <string name="support_message">Thanks to the developers for a cool app!</string>
     <string name="mail_app_not_found">Mail application not found!</string>
-    <string name="user_agreement_link">https://yandex.ru/legal/practicum_offer/</string>
     <string name="share_chooser_text">Send a message via:</string>
 </resources>

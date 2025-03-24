@@ -13,6 +13,12 @@ import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 
 class SearchActivity : AppCompatActivity() {
+
+    companion object {
+        private const val EDIT_TEXT_KEY = "EDIT_TEXT_KEY"
+        private const val CURSOR_POSITION = "CURSOR_POSITION"
+    }
+
     //переменная объявлена вне функции onCreate, чтобы доступ к ней был в функции onSaveInstanceState
     private lateinit var searchEditText: EditText
     private var savedText = ""
@@ -27,8 +33,7 @@ class SearchActivity : AppCompatActivity() {
         val backButton = findViewById<Button>(R.id.search_back_buttton)
 
         backButton.setOnClickListener {
-            val intentBack = Intent(this@SearchActivity, MainActivity::class.java)
-            startActivity(intentBack)
+            finish()
         }
 
         clearText.setOnClickListener {
@@ -42,7 +47,7 @@ class SearchActivity : AppCompatActivity() {
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                clearText.visibility = clearButtonVisibility(s)
+                clearText.visibility = if (!s.isNullOrEmpty()) View.VISIBLE else View.GONE
             }
 
             override fun afterTextChanged(s: Editable?) {
@@ -55,26 +60,17 @@ class SearchActivity : AppCompatActivity() {
     //сохранение текста из строки ввода
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putString("EDIT_TEXT_KEY", searchEditText.text.toString())
-        outState.putInt("CURSOR_POSITION", searchEditText.selectionStart)
+        outState.putString(EDIT_TEXT_KEY, searchEditText.text.toString())
+        outState.putInt(CURSOR_POSITION, searchEditText.selectionStart)
     }
 
     //восстановление строки ввода из сохраненного Bundle
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        savedText = savedInstanceState.getString("EDIT_TEXT_KEY") ?: ""
-        val cursorPosition = savedInstanceState.getInt("CURSOR_POSITION", 0)
+        savedText = savedInstanceState.getString(EDIT_TEXT_KEY) ?: ""
+        val cursorPosition = savedInstanceState.getInt(CURSOR_POSITION, 0)
         searchEditText.setText(savedText)
         searchEditText.setSelection(cursorPosition.coerceIn(0, savedText.length))
-    }
-
-    //функция, отвечающая за видимость кнопки очистки строки ввода
-    private fun clearButtonVisibility(s: CharSequence?): Int {
-        return if (s.isNullOrEmpty()) {
-            View.GONE
-        } else {
-            View.VISIBLE
-        }
     }
 
     //функция, отвечающая за отключение клавиатуры при нажатии на кнопку очистки строки ввода

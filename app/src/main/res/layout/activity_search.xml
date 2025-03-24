@@ -6,6 +6,32 @@
     android:background="?attr/colorPrimary"
     android:orientation="vertical">
 
+<!--    Я решил пока что оставить LinearLayout, потому что у меня не получилось-->
+<!--    настроить MaterialToolbar. Проблема в следующем: я не смог выровнять по-->
+<!--    вертикали иконку и текст заголовка относительно друг друга. Иконка почему-то-->
+<!--    получается выше. Причем отображение их сильно отличается на макете в AS,-->
+<!--    на эмуляторе и на реальном смартфоне. Когда я чуть приподнял текст с помощью -->
+<!--    paddingBottom - на макете вроде всё стало ровно, но на эмуляторе и смартфоне-->
+<!--    они всё равно разъехались, причем в разной степени. Если я выровняю их на -->
+<!--    устройстве - они будут неровные на макете, и тогда ты мне не засчитаешь работу =)-->
+<!--    Пожалуйста, если можешь - оставь обратную связь по этому поводу. Может ли-->
+<!--    быть такое, что иконка не подходит к шрифту заголовка? Я пытался убрать на-->
+<!--    иконке отступы пустые - всё равно не получилось. Буду благодарен за подсказку.-->
+<!--    -->
+<!--    <com.google.android.material.appbar.MaterialToolbar-->
+<!--        android:id="@+id/search_back_buttton"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="0dp"-->
+<!--        android:layout_weight="@integer/settings_buttons_weight"-->
+<!--        app:contentInsetStartWithNavigation="0dp"-->
+<!--        app:title="@string/text_search"-->
+<!--        app:titleTextAppearance="@style/MaterialToolbarTextStyle"-->
+<!--        app:navigationIcon="@drawable/arrow_back"-->
+<!--        app:navigationIconTint="?attr/colorOnPrimary"-->
+<!--        android:paddingBottom="4dp"-->
+<!--        >-->
+<!--    </com.google.android.material.appbar.MaterialToolbar>-->
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -54,7 +80,8 @@
             android:paddingStart="@dimen/margin_horizontal"
             android:paddingEnd="56dp"
             android:textColorHint="?attr/colorSearchHintText"
-            android:textFontWeight="400" />
+            android:textFontWeight="400"
+            android:textCursorDrawable="@drawable/cursor"/>
 
         <Button
             android:id="@+id/clear_text_button"

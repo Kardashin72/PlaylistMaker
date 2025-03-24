@@ -8,6 +8,8 @@ import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SwitchCompat
+import androidx.core.net.toUri
+import com.google.android.material.button.MaterialButton
 
 class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -17,8 +19,7 @@ class SettingsActivity : AppCompatActivity() {
         val backButton = findViewById<Button>(R.id.settings_back)
 
         backButton.setOnClickListener {
-            val intentBack = Intent(this@SettingsActivity, MainActivity::class.java)
-            startActivity(intentBack)
+            finish()
         }
 
         val shareButton = findViewById<Button>(R.id.shareButton)
@@ -58,10 +59,9 @@ class SettingsActivity : AppCompatActivity() {
         userAgreementButton.setOnClickListener {
             val userAgreementIntent = Intent(Intent.ACTION_VIEW).apply {
 
-                data = Uri.parse(getString(R.string.user_agreement_link))
+                data = getString(R.string.user_agreement_link).toUri()
             }
             startActivity(userAgreementIntent)
         }
-
     }
 }

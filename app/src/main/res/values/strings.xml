@@ -11,7 +11,7 @@
     <string name="support_message">Спасибо разработчикам и разработчицам за крутое приложение!</string>
     <string name="support_email" translatable="false">kardashin.s.n@gmail.com</string>
     <string name="mail_app_not_found">Почтовое приложение не найдено!</string>
-    <string name="user_agreement_link">https://yandex.ru/legal/practicum_offer/</string>
+    <string name="user_agreement_link" translatable="false">https://yandex.ru/legal/practicum_offer/</string>
     <string name="share_link" translatable="false">https://practicum.yandex.ru/android-developer/?from=catalog</string>
     <string name="share_chooser_text">Отправить сообщение через:</string>
 </resources>

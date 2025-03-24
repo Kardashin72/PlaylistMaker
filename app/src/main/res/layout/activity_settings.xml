@@ -8,9 +8,8 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin_vertical"
-        android:layout_weight="@integer/settings_buttons_weight"
         android:orientation="horizontal">
 
         <Button
@@ -63,48 +62,57 @@
         android:text="@string/text_user_agreement"
         app:icon="@drawable/arrow_forward_icon" />
 
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="6"/>
+<!--    <Space-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="0dp"-->
+<!--        android:layout_weight="8"/>-->
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        style="?android:attr/buttonBarStyle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        app:layout_constraintBottom_toBottomOf="parent">
+<!--    Еесли ты не против - я пока что просто закомментирую эту часть, т.к. реализовал-->
+<!--    я её не просто так, у нас в домашних заданиях даны ссылки на неправильные макеты-->
+<!--    https://www.figma.com/design/WKIfi0QI0g90ImfTOgvVbN/Playlist-Maker-(YP)?node-id=470-24157&t=MaMcIcm4MHZwYvFZ-0 -->
+<!--    вот ссылка на макет экрана настроек из первого домашнего задания 8 спринта.-->
+<!--    https://www.figma.com/design/WKIfi0QI0g90ImfTOgvVbN/Playlist-Maker-(YP)?node-id=470-28905&t=KL1SOrGZLoXItF7d-0 -->
+<!--    вот ссылка на тот же макет в темном варианте из первого домашнего задания 9 спринта. -->
+<!--    В обоих вариантах есть навигационная панель с кнопками снизу. А проверяете вы нас, получается,-->
+<!--    по другим макетам. -->
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/search_button"
-            style="@style/SettingsButtonsBarStyle"
-            android:text="@string/text_search"
-            app:icon="@drawable/search_icon"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/media_library_button"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+    <!--    <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--        style="?android:attr/buttonBarStyle"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_weight="1"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent">-->
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/media_library_button"
-            style="@style/SettingsButtonsBarStyle"
-            android:text="@string/text_media_library"
-            app:icon="@drawable/media_library_icon"
-            app:layout_constraintHorizontal_weight="1"
-            app:layout_constraintStart_toEndOf="@+id/search_button"
-            app:layout_constraintEnd_toStartOf="@+id/settings_button"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+<!--        <com.google.android.material.button.MaterialButton-->
+<!--            android:id="@+id/search_button"-->
+<!--            style="@style/SettingsButtonsBarStyle"-->
+<!--            android:text="@string/text_search"-->
+<!--            app:icon="@drawable/search_icon"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintEnd_toStartOf="@+id/media_library_button"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"/>-->
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/settings_button"
-            style="@style/SettingsButtonsBarStyle"
-            android:text="@string/text_settings"
-            android:textColor="@color/YP_Blue"
-            app:icon="@drawable/settings_icon"
-            app:iconTint="@color/YP_Blue"
-            app:layout_constraintHorizontal_weight="1"
-            app:layout_constraintStart_toEndOf="@+id/media_library_button"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+<!--        <com.google.android.material.button.MaterialButton-->
+<!--            android:id="@+id/media_library_button"-->
+<!--            style="@style/SettingsButtonsBarStyle"-->
+<!--            android:text="@string/text_media_library"-->
+<!--            app:icon="@drawable/media_library_icon"-->
+<!--            app:layout_constraintHorizontal_weight="1"-->
+<!--            app:layout_constraintStart_toEndOf="@+id/search_button"-->
+<!--            app:layout_constraintEnd_toStartOf="@+id/settings_button"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"/>-->
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+<!--        <com.google.android.material.button.MaterialButton-->
+<!--            android:id="@+id/settings_button"-->
+<!--            style="@style/SettingsButtonsBarStyle"-->
+<!--            android:text="@string/text_settings"-->
+<!--            android:textColor="@color/YP_Blue"-->
+<!--            app:icon="@drawable/settings_icon"-->
+<!--            app:iconTint="@color/YP_Blue"-->
+<!--            app:layout_constraintHorizontal_weight="1"-->
+<!--            app:layout_constraintStart_toEndOf="@+id/media_library_button"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"/>-->
+
+<!--    </androidx.constraintlayout.widget.ConstraintLayout>-->
 </LinearLayout>
