@@ -63,7 +63,7 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginHorizontal="@dimen/margin_horizontal"
+        android:layout_marginHorizontal="@dimen/main_margin_horizontal"
         android:layout_weight="@integer/search_edit_text_weight"
         android:background="@drawable/edit_search_background">
 
@@ -77,7 +77,7 @@
             android:drawableTint="?attr/colorSearchHintText"
             android:fontFamily="@font/ys_display_regular"
             android:hint="@string/text_search"
-            android:paddingStart="@dimen/margin_horizontal"
+            android:paddingStart="@dimen/main_margin_horizontal"
             android:paddingEnd="56dp"
             android:textColorHint="?attr/colorSearchHintText"
             android:textFontWeight="400"
@@ -89,16 +89,21 @@
             android:layout_height="match_parent"
             android:layout_gravity="end"
             android:gravity="center"
-            android:paddingEnd="@dimen/margin_horizontal"
+            android:paddingEnd="@dimen/main_margin_horizontal"
             android:background="@android:color/transparent"
             android:drawableRight="@drawable/cross"
             android:drawableTint="?attr/colorSearchHintText"
             android:visibility="gone" />
     </FrameLayout>
 
-    <Space
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/search_recycle_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="10" />
+        android:layout_weight="10"
+        android:layout_marginTop="@dimen/main_margin_vertical"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        >
+    </androidx.recyclerview.widget.RecyclerView>
 
 </LinearLayout>

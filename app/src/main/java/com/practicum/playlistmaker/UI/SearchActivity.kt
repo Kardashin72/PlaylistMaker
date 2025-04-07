@@ -1,8 +1,7 @@
-package com.practicum.playlistmaker
+package com.practicum.playlistmaker.UI
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -11,6 +10,11 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.data.trackList
+import com.bumptech.glide.Glide
 
 class SearchActivity : AppCompatActivity() {
 
@@ -18,6 +22,9 @@ class SearchActivity : AppCompatActivity() {
         private const val EDIT_TEXT_KEY = "EDIT_TEXT_KEY"
         private const val CURSOR_POSITION = "CURSOR_POSITION"
     }
+
+    private lateinit var recycleView: RecyclerView
+    private lateinit var adapter: SearchRecycleViewAdapter
 
     //переменная объявлена вне функции onCreate, чтобы доступ к ней был в функции onSaveInstanceState
     private lateinit var searchEditText: EditText
@@ -55,6 +62,11 @@ class SearchActivity : AppCompatActivity() {
             }
         }
         searchEditText.addTextChangedListener(searchTextWatcher)
+
+        recycleView = findViewById(R.id.search_recycle_view)
+        adapter = SearchRecycleViewAdapter(trackList)
+        recycleView.adapter = adapter
+        recycleView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
     }
 
     //сохранение текста из строки ввода
@@ -81,4 +93,8 @@ class SearchActivity : AppCompatActivity() {
         inputManager.hideSoftInputFromWindow(view.windowToken, 0)
         view.clearFocus()
     }
+
+
+
+
 }
