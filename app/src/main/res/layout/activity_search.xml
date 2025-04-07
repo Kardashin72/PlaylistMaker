@@ -62,15 +62,16 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
+        android:minHeight="36dp"
         android:layout_marginHorizontal="@dimen/main_margin_horizontal"
-        android:layout_weight="@integer/search_edit_text_weight"
         android:background="@drawable/edit_search_background">
 
         <EditText
             android:id="@+id/search_edit_text"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:minHeight="36dp"
             android:background="@drawable/stroke_width"
             android:drawableStart="@drawable/small_search_icon"
             android:drawablePadding="8dp"
@@ -81,7 +82,8 @@
             android:paddingEnd="56dp"
             android:textColorHint="?attr/colorSearchHintText"
             android:textFontWeight="400"
-            android:textCursorDrawable="@drawable/cursor"/>
+            android:textCursorDrawable="@drawable/cursor"
+            android:textColor="?attr/colorOnSecondary"/>
 
         <Button
             android:id="@+id/clear_text_button"
@@ -100,7 +102,7 @@
         android:id="@+id/search_recycle_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="10"
+        android:layout_weight="8"
         android:layout_marginTop="@dimen/main_margin_vertical"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         >
