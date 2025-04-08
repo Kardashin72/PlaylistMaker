@@ -4,8 +4,8 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:layout_weight">1</item>
-        <item name="android:layout_marginHorizontal">@dimen/margin_horizontal</item>
-        <item name="android:layout_marginTop">@dimen/margin_vertical</item>
+        <item name="android:layout_marginHorizontal">@dimen/main_margin_horizontal</item>
+        <item name="android:layout_marginTop">@dimen/main_margin_vertical</item>
         <item name="android:backgroundTint">?attr/colorSecondary</item>
         <item name="android:textColor">?attr/colorOnSecondary</item>
         <item name="android:textSize">@dimen/main_font_size</item>
@@ -55,10 +55,10 @@
     <style name="EditTextStyle">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginHorizontal">@dimen/margin_horizontal</item>
-        <item name="android:paddingVertical">@dimen/margin_vertical</item>
+        <item name="android:layout_marginHorizontal">@dimen/main_margin_horizontal</item>
+        <item name="android:paddingVertical">@dimen/main_margin_vertical</item>
         <item name="cornerRadius">8dp</item>
-        <item name="android:drawablePadding">@dimen/margin_horizontal</item>
+        <item name="android:drawablePadding">@dimen/main_margin_horizontal</item>
         <item name="android:paddingHorizontal">10dp</item>
     </style>
 
