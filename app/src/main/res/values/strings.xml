@@ -14,4 +14,7 @@
     <string name="user_agreement_link" translatable="false">https://yandex.ru/legal/practicum_offer/</string>
     <string name="share_link" translatable="false">https://practicum.yandex.ru/android-developer/?from=catalog</string>
     <string name="share_chooser_text">Отправить сообщение через:</string>
+    <string name="search_not_found">Ничего не нашлось</string>
+    <string name="search_not_connection">Проблемы со связью \n\nЗагрузка не удалась. Проверьте подключение к интернету</string>
+    <string name="search_refresh">Обновить</string>
 </resources>
