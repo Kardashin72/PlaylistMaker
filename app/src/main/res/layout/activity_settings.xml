@@ -3,14 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:backgroundTint="@color/YP_White"
+    android:background="?attr/colorPrimary"
     android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="@dimen/margin_vertical"
-        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/main_margin_vertical"
         android:orientation="horizontal">
 
         <Button
@@ -18,142 +17,102 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:backgroundTint="@color/YP_White"
-            android:stateListAnimator="@null"
+            style="@style/SettingsMenuButtonsStyle"
             app:icon="@drawable/arrow_back"
-            app:iconTint="@color/YP_Black"
-            android:gravity="start|center_vertical" />
+            app:iconTint="?attr/colorOnPrimary"
+            app:iconGravity="start"/>
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="5"
             android:text="@string/text_settings"
-            android:textColor="@color/YP_Black"
+            android:textColor="?attr/colorOnPrimary"
             android:textSize="22sp"
-            android:textStyle="bold"
-            android:gravity="center_vertical|start"/>
+            android:fontFamily="@font/ys_display_medium"
+            android:textFontWeight="500"
+            android:gravity="center_vertical|start">
+        </TextView>
     </LinearLayout>
 
 
     <androidx.appcompat.widget.SwitchCompat
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginStart="@dimen/margin_horizontal"
-        android:layout_marginEnd="12dp"
-        android:layout_weight="1"
+        android:id="@+id/switch_theme_button"
+        style="@style/SettingsMenuButtonsStyle"
         android:checked="false"
-        android:stateListAnimator="@null"
         android:text="@string/text_switch_dark_theme"
-        android:textColor="@color/YP_Black"
-        android:textSize="@dimen/settings_buttons_font_size"
         app:thumbTint="@color/switch_thumb_color"
         app:trackTint="@color/switch_track_color" />
 
     <Button
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:backgroundTint="@color/YP_White"
-        android:gravity="start|center_vertical"
+        android:id="@+id/shareButton"
+        style="@style/SettingsMenuButtonsStyle"
         android:text="@string/text_share_app"
-        android:textAllCaps="false"
-        android:textColor="@color/YP_Black"
-        android:textSize="@dimen/settings_buttons_font_size"
-        android:stateListAnimator="@null"
-        app:icon="@drawable/share_icon"
-        app:iconGravity="end"
-        app:iconTint="@color/YP_Text_gray" />
+        app:icon="@drawable/share_icon" />
 
     <Button
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:backgroundTint="@color/YP_White"
-        android:gravity="start|center_vertical"
+        android:id="@+id/supportButton"
+        style="@style/SettingsMenuButtonsStyle"
         android:text="@string/text_write_to_support"
-        android:textAllCaps="false"
-        android:textColor="@color/YP_Black"
-        android:textSize="@dimen/settings_buttons_font_size"
-        android:stateListAnimator="@null"
-        app:icon="@drawable/support_icon"
-        app:iconGravity="end"
-        app:iconTint="@color/YP_Text_gray">
-
-    </Button>
+        app:icon="@drawable/support_icon" />
 
     <Button
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:backgroundTint="@color/YP_White"
-        android:gravity="start|center_vertical"
+        android:id="@+id/userAgreementButton"
+        style="@style/SettingsMenuButtonsStyle"
         android:text="@string/text_user_agreement"
-        android:textAllCaps="false"
-        android:textColor="@color/YP_Black"
-        android:textSize="@dimen/settings_buttons_font_size"
-        android:stateListAnimator="@null"
-        app:icon="@drawable/arrow_forward_icon"
-        app:iconGravity="end"
-        app:iconTint="@color/YP_Text_gray" />
+        app:icon="@drawable/arrow_forward_icon" />
 
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="6"/>
+<!--    <Space-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="0dp"-->
+<!--        android:layout_weight="8"/>-->
 
-    <LinearLayout
-        style="?android:attr/buttonBarStyle"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_gravity="bottom"
-        android:layout_weight="1"
-        android:orientation="horizontal">
+<!--    Еесли ты не против - я пока что просто закомментирую эту часть, т.к. реализовал-->
+<!--    я её не просто так, у нас в домашних заданиях даны ссылки на неправильные макеты-->
+<!--    https://www.figma.com/design/WKIfi0QI0g90ImfTOgvVbN/Playlist-Maker-(YP)?node-id=470-24157&t=MaMcIcm4MHZwYvFZ-0 -->
+<!--    вот ссылка на макет экрана настроек из первого домашнего задания 8 спринта.-->
+<!--    https://www.figma.com/design/WKIfi0QI0g90ImfTOgvVbN/Playlist-Maker-(YP)?node-id=470-28905&t=KL1SOrGZLoXItF7d-0 -->
+<!--    вот ссылка на тот же макет в темном варианте из первого домашнего задания 9 спринта. -->
+<!--    В обоих вариантах есть навигационная панель с кнопками снизу. А проверяете вы нас, получается,-->
+<!--    по другим макетам. -->
 
-        <Button
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:backgroundTint="@color/YP_White"
-            android:gravity="center"
-            android:stateListAnimator="@null"
-            android:text="@string/text_search"
-            android:textAllCaps="false"
-            android:textColor="@color/YP_Black"
-            android:textSize="@dimen/small_text_size"
-            app:icon="@drawable/search_icon"
-            app:iconGravity="textTop"
-            app:iconTint="@color/YP_Black" />
+    <!--    <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--        style="?android:attr/buttonBarStyle"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_weight="1"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent">-->
 
-        <Button
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:backgroundTint="@color/YP_White"
-            android:gravity="center_horizontal"
-            android:text="@string/text_media_library"
-            android:textAllCaps="false"
-            android:textColor="@color/YP_Black"
-            android:textSize="@dimen/small_text_size"
-            app:icon="@drawable/media_library_icon"
-            app:iconGravity="textTop"
-            app:iconTint="@color/YP_Black" />
+<!--        <com.google.android.material.button.MaterialButton-->
+<!--            android:id="@+id/search_button"-->
+<!--            style="@style/SettingsButtonsBarStyle"-->
+<!--            android:text="@string/text_search"-->
+<!--            app:icon="@drawable/search_icon"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintEnd_toStartOf="@+id/media_library_button"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"/>-->
 
-        <Button
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:backgroundTint="@color/YP_White"
-            android:gravity="center_horizontal"
-            android:text="@string/text_settings"
-            android:textAllCaps="false"
-            android:textColor="@color/YP_Blue"
-            android:textSize="@dimen/small_text_size"
-            app:icon="@drawable/settings_icon"
-            app:iconGravity="textTop"
-            app:iconTint="@color/YP_Blue" />
-    </LinearLayout>
+<!--        <com.google.android.material.button.MaterialButton-->
+<!--            android:id="@+id/media_library_button"-->
+<!--            style="@style/SettingsButtonsBarStyle"-->
+<!--            android:text="@string/text_media_library"-->
+<!--            app:icon="@drawable/media_library_icon"-->
+<!--            app:layout_constraintHorizontal_weight="1"-->
+<!--            app:layout_constraintStart_toEndOf="@+id/search_button"-->
+<!--            app:layout_constraintEnd_toStartOf="@+id/settings_button"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"/>-->
+
+<!--        <com.google.android.material.button.MaterialButton-->
+<!--            android:id="@+id/settings_button"-->
+<!--            style="@style/SettingsButtonsBarStyle"-->
+<!--            android:text="@string/text_settings"-->
+<!--            android:textColor="@color/YP_Blue"-->
+<!--            app:icon="@drawable/settings_icon"-->
+<!--            app:iconTint="@color/YP_Blue"-->
+<!--            app:layout_constraintHorizontal_weight="1"-->
+<!--            app:layout_constraintStart_toEndOf="@+id/media_library_button"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"/>-->
+
+<!--    </androidx.constraintlayout.widget.ConstraintLayout>-->
 </LinearLayout>
