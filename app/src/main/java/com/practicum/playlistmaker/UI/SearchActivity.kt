@@ -5,7 +5,6 @@ import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.TypedValue
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
@@ -18,29 +17,18 @@ import androidx.recyclerview.widget.RecyclerView
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.data.Track
 import com.practicum.playlistmaker.data.TrackSearchResponse
-import com.practicum.playlistmaker.data.TracksSearchApi
 import com.practicum.playlistmaker.data.dtoTracksToTrackList
+import com.practicum.playlistmaker.data.searchApiService
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+
 
 class SearchActivity : AppCompatActivity() {
     companion object {
         private const val EDIT_TEXT_KEY = "EDIT_TEXT_KEY"
         private const val CURSOR_POSITION = "CURSOR_POSITION"
     }
-
-    //настройка Retrofit
-    private val searchBaseUrl = "https://itunes.apple.com"
-
-    private val retrofit = Retrofit.Builder()
-        .baseUrl(searchBaseUrl)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-
-    private val searchApiService = retrofit.create(TracksSearchApi::class.java)
 
     //список треков для RecycleViewAdapter
     var trackList = ArrayList<Track>()
@@ -110,6 +98,13 @@ class SearchActivity : AppCompatActivity() {
 
             override fun afterTextChanged(s: Editable?) {
                 savedText = s?.toString() ?: ""
+                if (savedText.isEmpty()) {
+                    recycleView.visibility = View.GONE
+                    notFoundMessage.visibility = View.GONE
+                    searchConnectionErrorMessage.visibility = View.GONE
+                    trackList.clear()
+
+                }
             }
         }
 
@@ -151,6 +146,7 @@ class SearchActivity : AppCompatActivity() {
         view.clearFocus()
     }
 
+    //функция поиска трека через API
     private fun searchTrack() {
         searchApiService.search(searchEditText.text.toString())
             .enqueue(object : Callback<TrackSearchResponse> {
