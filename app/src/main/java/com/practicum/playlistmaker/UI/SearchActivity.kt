@@ -5,50 +5,88 @@ import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.TypedValue
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
+import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.data.trackList
-import com.bumptech.glide.Glide
+import com.practicum.playlistmaker.data.Track
+import com.practicum.playlistmaker.data.TrackSearchResponse
+import com.practicum.playlistmaker.data.dtoTracksToTrackList
+import com.practicum.playlistmaker.data.searchApiService
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+
 
 class SearchActivity : AppCompatActivity() {
-
     companion object {
         private const val EDIT_TEXT_KEY = "EDIT_TEXT_KEY"
         private const val CURSOR_POSITION = "CURSOR_POSITION"
     }
 
+    //список треков для RecycleViewAdapter
+    var trackList = ArrayList<Track>()
+
+    //инициализация всех View
     private lateinit var recycleView: RecyclerView
     private lateinit var adapter: SearchRecycleViewAdapter
-
-    //переменная объявлена вне функции onCreate, чтобы доступ к ней был в функции onSaveInstanceState
+    private lateinit var notFoundMessage: LinearLayout
+    private lateinit var searchConnectionErrorMessage: LinearLayout
+    private lateinit var refreshButton: Button
     private lateinit var searchEditText: EditText
+    private lateinit var clearText: Button
+    private lateinit var backButton: Button
+
+    //переменная для сохранения состояния активити
     private var savedText = ""
 
+    //старт активити
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
 
+        //присвоение View по ID
         searchEditText = findViewById<EditText>(R.id.search_edit_text)
-        val clearText = findViewById<Button>(R.id.clear_text_button)
-        val backButton = findViewById<Button>(R.id.search_back_buttton)
+        clearText = findViewById<Button>(R.id.clear_text_button)
+        backButton = findViewById<Button>(R.id.search_back_buttton)
+        refreshButton = findViewById<Button>(R.id.search_refresh_button)
+        notFoundMessage = findViewById(R.id.not_found_error)
+        searchConnectionErrorMessage = findViewById(R.id.search_connection_error)
+        recycleView = findViewById(R.id.search_recycle_view)
 
+        //настройка адаптера и layoutManager
+        adapter = SearchRecycleViewAdapter(trackList)
+        recycleView.adapter = adapter
+        recycleView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+
+        //обработка нажатия на кнопку "Назад"
         backButton.setOnClickListener {
             finish()
         }
 
+        //обработка нажатия на кнопку очистки строки ввода
         clearText.setOnClickListener {
             searchEditText.text.clear()
+            trackList.clear()
             hideKeyboard(searchEditText)
+            recycleView.visibility = View.GONE
+            notFoundMessage.visibility = View.GONE
+            searchConnectionErrorMessage.visibility = View.GONE
         }
 
+        //обработка нажатия на кнопку "Обновить" в случае отсутствия интернета
+        refreshButton.setOnClickListener {
+            searchTrack()
+        }
+
+        //настройка TextWatcher
         val searchTextWatcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
                 //заглушка
@@ -60,14 +98,28 @@ class SearchActivity : AppCompatActivity() {
 
             override fun afterTextChanged(s: Editable?) {
                 savedText = s?.toString() ?: ""
+                if (savedText.isEmpty()) {
+                    recycleView.visibility = View.GONE
+                    notFoundMessage.visibility = View.GONE
+                    searchConnectionErrorMessage.visibility = View.GONE
+                    trackList.clear()
+
+                }
             }
         }
+
+        //установка TextWatcher на EditText
         searchEditText.addTextChangedListener(searchTextWatcher)
 
-        recycleView = findViewById(R.id.search_recycle_view)
-        adapter = SearchRecycleViewAdapter(trackList)
-        recycleView.adapter = adapter
-        recycleView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        //обработка нажатия на кнопку "ОК" экранной клавиатуры
+        searchEditText.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                searchTrack()
+                true
+            }
+            false
+        }
+
     }
 
     //сохранение текста из строки ввода
@@ -87,7 +139,6 @@ class SearchActivity : AppCompatActivity() {
     }
 
     //функция, отвечающая за отключение клавиатуры при нажатии на кнопку очистки строки ввода
-    //писал с помощью ИИ, так как в теории не нашел, как это сделать
     private fun hideKeyboard(view: View) {
         val inputManager =
             view.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -95,14 +146,37 @@ class SearchActivity : AppCompatActivity() {
         view.clearFocus()
     }
 
-    fun dpToPx(dp: Float, context: Context) : Int {
-        return TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP,
-            dp,
-            resources.displayMetrics).toInt()
+    //функция поиска трека через API
+    private fun searchTrack() {
+        searchApiService.search(searchEditText.text.toString())
+            .enqueue(object : Callback<TrackSearchResponse> {
+                override fun onResponse(
+                    call: Call<TrackSearchResponse>,
+                    response: Response<TrackSearchResponse>
+                ) {
+                    if (response.isSuccessful) {
+                        if (response.body()?.dtoTracks?.isNotEmpty() == true) {
+                            trackList.clear()
+                            trackList.addAll(dtoTracksToTrackList(response.body()))
+                            adapter.notifyDataSetChanged()
+                            notFoundMessage.visibility = View.GONE
+                            searchConnectionErrorMessage.visibility = View.GONE
+                            recycleView.visibility = View.VISIBLE
+                        }
+                        else {
+                            trackList.clear()
+                            recycleView.visibility = View.GONE
+                            searchConnectionErrorMessage.visibility = View.GONE
+                            notFoundMessage.visibility = View.VISIBLE
+                        }
+                    }
+                }
+
+                override fun onFailure(call: Call<TrackSearchResponse>, t: Throwable) {
+                    searchConnectionErrorMessage.visibility = View.VISIBLE
+                    recycleView.visibility = View.GONE
+                    notFoundMessage.visibility = View.GONE
+                }
+            })
     }
-
-
-
-
 }
