@@ -5,7 +5,6 @@ import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.TypedValue
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
@@ -16,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.data.SearchHistory
 import com.practicum.playlistmaker.data.Track
 import com.practicum.playlistmaker.data.TrackSearchResponse
 import com.practicum.playlistmaker.data.TracksSearchApi
@@ -30,6 +30,8 @@ class SearchActivity : AppCompatActivity() {
     companion object {
         private const val EDIT_TEXT_KEY = "EDIT_TEXT_KEY"
         private const val CURSOR_POSITION = "CURSOR_POSITION"
+        private const val HISTORY_PREFERENCES = "HISTORY_PREFERENCES"
+        private const val HISTORY_PREFERENCES_KEY = "HISTORY_PREFERENCES_KEY"
     }
 
     //настройка Retrofit
@@ -47,13 +49,17 @@ class SearchActivity : AppCompatActivity() {
 
     //инициализация всех View
     private lateinit var recycleView: RecyclerView
-    private lateinit var adapter: SearchRecycleViewAdapter
+    private lateinit var historyView: LinearLayout
+    private lateinit var searchHistoryView: RecyclerView
+    private lateinit var searchAdapter: SearchRecycleViewAdapter
+    private lateinit var historyAdapter: SearchRecycleViewAdapter
     private lateinit var notFoundMessage: LinearLayout
     private lateinit var searchConnectionErrorMessage: LinearLayout
     private lateinit var refreshButton: Button
     private lateinit var searchEditText: EditText
     private lateinit var clearText: Button
     private lateinit var backButton: Button
+    private lateinit var clearSearchHistory: Button
 
     //переменная для сохранения состояния активити
     private var savedText = ""
@@ -72,11 +78,47 @@ class SearchActivity : AppCompatActivity() {
         notFoundMessage = findViewById(R.id.not_found_error)
         searchConnectionErrorMessage = findViewById(R.id.search_connection_error)
         recycleView = findViewById(R.id.search_recycle_view)
+        historyView = findViewById(R.id.history_view)
+        searchHistoryView = findViewById(R.id.search_history)
+        clearSearchHistory = findViewById(R.id.clear_search_history)
 
-        //настройка адаптера и layoutManager
-        adapter = SearchRecycleViewAdapter(trackList)
-        recycleView.adapter = adapter
+        //инициализация shared perferences и создание экземпляра SearchHistory
+        val sharedPreferences = getSharedPreferences(HISTORY_PREFERENCES, MODE_PRIVATE)
+        val searchHistory = SearchHistory(sharedPreferences)
+
+        //обработка изменения состояния фокуса поля ввода текста
+        searchEditText.setOnFocusChangeListener { view, hasFocus ->
+            if (hasFocus && searchEditText.text.isEmpty()
+                && searchHistory.hasHistory(HISTORY_PREFERENCES_KEY)) {
+                historyAdapter.tracks = searchHistory.loadSearchHistory(HISTORY_PREFERENCES_KEY)
+                historyAdapter.notifyDataSetChanged()
+                historyView.visibility = View.VISIBLE
+            } else {
+                historyView.visibility = View.GONE
+            }
+        }
+
+
+        //настройка адаптера и layoutManager для результатов поиска
+        searchAdapter = SearchRecycleViewAdapter(trackList) { track ->
+            searchHistory.saveTrackToHistory(track, HISTORY_PREFERENCES_KEY)
+            historyAdapter.tracks = searchHistory.loadSearchHistory(HISTORY_PREFERENCES_KEY)
+            historyAdapter.notifyDataSetChanged()
+        }
+        recycleView.adapter = searchAdapter
         recycleView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+
+        //настройка адаптера и layoutManager для истории поиска
+        historyAdapter = SearchRecycleViewAdapter(searchHistory.loadSearchHistory(HISTORY_PREFERENCES_KEY)) {
+                TODO()
+        }
+        searchHistoryView.adapter = historyAdapter
+        searchHistoryView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+
+        clearSearchHistory.setOnClickListener {
+            searchHistory.clearSearchHistory()
+            historyView.visibility = View.GONE
+        }
 
         //обработка нажатия на кнопку "Назад"
         backButton.setOnClickListener {
@@ -100,16 +142,33 @@ class SearchActivity : AppCompatActivity() {
 
         //настройка TextWatcher
         val searchTextWatcher = object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                //заглушка
+            override fun beforeTextChanged(
+                s: CharSequence?,
+                start: Int,
+                count: Int,
+                after: Int,
+            ) {
+                historyView.visibility =
+                    if (searchEditText.hasFocus()) View.VISIBLE else View.GONE
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 clearText.visibility = if (!s.isNullOrEmpty()) View.VISIBLE else View.GONE
+                if (searchEditText.hasFocus() && s?.isEmpty() == true && searchHistory.hasHistory(HISTORY_PREFERENCES_KEY) == true) {
+                    historyView.visibility = View.VISIBLE
+                } else {
+                    historyView.visibility = View.GONE
+                }
             }
 
             override fun afterTextChanged(s: Editable?) {
                 savedText = s?.toString() ?: ""
+                if (savedText.isEmpty()) {
+                    trackList.clear()
+                    recycleView.visibility = View.GONE
+                    notFoundMessage.visibility = View.GONE
+                    searchConnectionErrorMessage.visibility = View.GONE
+                }
             }
         }
 
@@ -124,7 +183,6 @@ class SearchActivity : AppCompatActivity() {
             }
             false
         }
-
     }
 
     //сохранение текста из строки ввода
@@ -156,18 +214,17 @@ class SearchActivity : AppCompatActivity() {
             .enqueue(object : Callback<TrackSearchResponse> {
                 override fun onResponse(
                     call: Call<TrackSearchResponse>,
-                    response: Response<TrackSearchResponse>
+                    response: Response<TrackSearchResponse>,
                 ) {
                     if (response.isSuccessful) {
                         if (response.body()?.dtoTracks?.isNotEmpty() == true) {
                             trackList.clear()
                             trackList.addAll(dtoTracksToTrackList(response.body()))
-                            adapter.notifyDataSetChanged()
+                            searchAdapter.notifyDataSetChanged()
                             notFoundMessage.visibility = View.GONE
                             searchConnectionErrorMessage.visibility = View.GONE
                             recycleView.visibility = View.VISIBLE
-                        }
-                        else {
+                        } else {
                             trackList.clear()
                             recycleView.visibility = View.GONE
                             searchConnectionErrorMessage.visibility = View.GONE

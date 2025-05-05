@@ -5,6 +5,7 @@ import com.google.gson.annotations.SerializedName
 class TrackSearchResponse(@SerializedName("results") val dtoTracks: List<DtoTrack>)
 
 data class DtoTrack(
+    val trackId: Int,
     val trackName: String,
     val artistName: String,
     @SerializedName("trackTimeMillis") val trackTime: Long,
