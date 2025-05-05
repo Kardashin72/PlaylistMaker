@@ -18,13 +18,12 @@ import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.data.SearchHistory
 import com.practicum.playlistmaker.data.Track
 import com.practicum.playlistmaker.data.TrackSearchResponse
-import com.practicum.playlistmaker.data.TracksSearchApi
 import com.practicum.playlistmaker.data.dtoTracksToTrackList
+import com.practicum.playlistmaker.data.searchApiService
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+
 
 class SearchActivity : AppCompatActivity() {
     companion object {
@@ -33,16 +32,6 @@ class SearchActivity : AppCompatActivity() {
         private const val HISTORY_PREFERENCES = "HISTORY_PREFERENCES"
         private const val HISTORY_PREFERENCES_KEY = "HISTORY_PREFERENCES_KEY"
     }
-
-    //настройка Retrofit
-    private val searchBaseUrl = "https://itunes.apple.com"
-
-    private val retrofit = Retrofit.Builder()
-        .baseUrl(searchBaseUrl)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-
-    private val searchApiService = retrofit.create(TracksSearchApi::class.java)
 
     //список треков для RecycleViewAdapter
     var trackList = ArrayList<Track>()
@@ -209,6 +198,7 @@ class SearchActivity : AppCompatActivity() {
         view.clearFocus()
     }
 
+    //функция поиска трека через API
     private fun searchTrack() {
         searchApiService.search(searchEditText.text.toString())
             .enqueue(object : Callback<TrackSearchResponse> {
