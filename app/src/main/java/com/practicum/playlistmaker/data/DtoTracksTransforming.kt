@@ -9,6 +9,7 @@ private fun trackTimeConvert(ms: Long) : String {
 
 private fun dtoTrackToTrack(dto: DtoTrack) : Track {
     return Track(
+        trackId = dto.trackId,
         trackName = dto.trackName,
         artistName = dto.artistName,
         trackTime = trackTimeConvert(dto.trackTime),

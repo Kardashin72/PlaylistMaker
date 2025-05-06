@@ -36,7 +36,7 @@
     </LinearLayout>
 
 
-    <androidx.appcompat.widget.SwitchCompat
+    <com.google.android.material.switchmaterial.SwitchMaterial
         android:id="@+id/switch_theme_button"
         style="@style/SettingsMenuButtonsStyle"
         android:checked="false"

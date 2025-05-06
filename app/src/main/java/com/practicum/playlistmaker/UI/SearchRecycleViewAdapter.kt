@@ -12,7 +12,10 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.data.Track
 
-class SearchRecycleViewAdapter (private val tracks: List<Track>) : RecyclerView.Adapter<SearchRecycleViewAdapter.SearchViewHolder>() {
+class SearchRecycleViewAdapter (
+    var tracks: List<Track>,
+    private val onItemClick: (Track) -> Unit)
+    : RecyclerView.Adapter<SearchRecycleViewAdapter.SearchViewHolder>() {
 
     class SearchViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val artworkView: ImageView = itemView.findViewById(R.id.track_artwork)
@@ -40,8 +43,10 @@ class SearchRecycleViewAdapter (private val tracks: List<Track>) : RecyclerView.
 
     override fun onBindViewHolder(holder: SearchViewHolder, position: Int) {
         holder.bind(tracks[position])
+        holder.itemView.setOnClickListener {
+            onItemClick(tracks[position])
+        }
     }
-
 
     override fun getItemCount() = tracks.size
 }

@@ -6,19 +6,43 @@ import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
+import com.google.android.material.switchmaterial.SwitchMaterial
 import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.data.App
 
 class SettingsActivity : AppCompatActivity() {
+
+    companion object {
+        const val THEME_PREFERENCES = "THEME_PREFERENCES"
+        const val SWITCHER_KEY = "SWITCHER_KEY"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
 
-        val backButton = findViewById<Button>(R.id.settings_back)
+        //инициализация и обработка нажатия на свитчер темы с сохранением текущего
+        //состояния в shared_preferences
+        val theme_shared_prefs = getSharedPreferences(THEME_PREFERENCES, MODE_PRIVATE)
+        val themeSwitcher = findViewById<SwitchMaterial>(R.id.switch_theme_button)
+        themeSwitcher.isChecked = theme_shared_prefs.getBoolean(SWITCHER_KEY, false)
 
+
+        themeSwitcher.setOnCheckedChangeListener { switcher, checked ->
+            (applicationContext as App).switchTheme(checked)
+            theme_shared_prefs.edit()
+                .putBoolean(SWITCHER_KEY, checked)
+                .apply()
+        }
+
+
+        //инициализация и обработка нажатия на кнопку "назад"
+        val backButton = findViewById<Button>(R.id.settings_back)
         backButton.setOnClickListener {
             finish()
         }
 
+        //инициализация и обработка нажатия на кнопку "поделиться"
         val shareButton = findViewById<Button>(R.id.shareButton)
         shareButton.setOnClickListener {
             val shareIntent = Intent(Intent.ACTION_SEND).apply {
@@ -29,14 +53,7 @@ class SettingsActivity : AppCompatActivity() {
             startActivity(chooser)
         }
 
-        //изначально пытался сделать через
-        //     val supportIntent = Intent(Intent.ACTION_SENDTO).apply {
-        //         data = Uri.parse("mailto:${getString(R.string.support_email)}")
-        //         putExtra(Intent.EXTRA_SUBJECT, getString(R.string.support_message_topic))
-        //         putExtra(Intent.EXTRA_TEXT, getString(R.string.support_message))
-        //     }
-        //но этот вариант на моем смартфоне стабильно выдавал Toast-заглушку, хотя есть Gmail по умолчанию
-        //текущий вариант работает через выбор приложения
+        //инициализация и обработка нажатия на кнопку "написать в поддержку"
         val supportButton = findViewById<Button>(R.id.supportButton)
         supportButton.setOnClickListener {
             val supportIntent = Intent(Intent.ACTION_SEND).apply {
@@ -52,6 +69,7 @@ class SettingsActivity : AppCompatActivity() {
             }
         }
 
+        //инициализация и обработка нажатия на кнопку "пользовательское соглашение"
         val userAgreementButton = findViewById<Button>(R.id.userAgreementButton)
         userAgreementButton.setOnClickListener {
             val userAgreementIntent = Intent(Intent.ACTION_VIEW).apply {
