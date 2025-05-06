@@ -7,7 +7,9 @@ import com.practicum.playlistmaker.UI.SettingsActivity.Companion.THEME_PREFERENC
 
 class App : Application() {
 
-    var darkTheme = false
+    private var _darkTheme = false
+    val darkTheme get() = _darkTheme
+
 
     override fun onCreate() {
         super.onCreate()
@@ -21,7 +23,7 @@ class App : Application() {
     }
 
     fun switchTheme(darkThemeEnabled: Boolean) {
-        darkTheme = darkThemeEnabled
+        _darkTheme = darkThemeEnabled
         AppCompatDelegate.setDefaultNightMode(
             if (darkThemeEnabled) {
                 AppCompatDelegate.MODE_NIGHT_YES
