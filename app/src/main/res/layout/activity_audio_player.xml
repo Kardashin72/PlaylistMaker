@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="?attr/colorPrimary">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/left_guidline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintGuide_begin="24dp"
+        android:orientation="vertical">
+    </androidx.constraintlayout.widget.Guideline>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/right_guidline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintGuide_end="24dp"
+        android:orientation="vertical">
+    </androidx.constraintlayout.widget.Guideline>
+    
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/audioplayer_topbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:navigationIcon="@drawable/arrow_back"
+        app:navigationIconTint="?attr/colorOnPrimary">
+    </com.google.android.material.appbar.MaterialToolbar>
+
+    <ImageView
+        android:id="@+id/player_track_artwork"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintDimensionRatio="H,1:1"
+        app:layout_constraintTop_toBottomOf="@id/audioplayer_topbar"
+        android:layout_marginTop="26dp"
+        app:layout_constraintStart_toEndOf="@id/left_guidline"
+        app:layout_constraintEnd_toStartOf="@id/right_guidline">
+    </ImageView>
+
+    <TextView
+        android:id="@+id/player_track_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/player_track_artwork"
+        app:layout_constraintStart_toEndOf="@id/left_guidline"
+        app:layout_constraintEnd_toStartOf="@id/right_guidline"
+        android:layout_marginTop="24dp"
+        android:textSize="22sp"
+        android:fontFamily="@font/ys_display_medium"
+        android:textFontWeight="400"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:gravity="start">
+    </TextView>
+
+    <TextView
+        android:id="@+id/player_artist_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/player_track_name"
+        android:layout_marginTop="12dp"
+        app:layout_constraintStart_toEndOf="@id/left_guidline"
+        app:layout_constraintEnd_toStartOf="@id/right_guidline"
+        android:textSize="14sp"
+        android:fontFamily="@font/ys_display_medium"
+        android:textFontWeight="400"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:gravity="start">
+    </TextView>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/add_to_playlist_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toEndOf="@id/left_guidline"
+        app:layout_constraintTop_toBottomOf="@id/player_artist_name"
+        android:layout_marginTop="54dp"
+        app:layout_constraintDimensionRatio="H,1:1"
+
+        >
+    </com.google.android.material.button.MaterialButton>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/play_pause_button"
+        android:layout_width="83dp"
+        android:layout_height="83dp"
+        app:layout_constraintStart_toEndOf="@id/add_to_playlist_button"
+        app:layout_constraintEnd_toStartOf="@id/like_button"
+        app:layout_constraintTop_toBottomOf="@id/player_artist_name"
+        app:icon="@drawable/play_button"
+        app:iconTint="?attr/colorOnPrimary"
+
+        android:layout_marginTop="30dp"
+        >
+    </com.google.android.material.button.MaterialButton>
+
+    <Button
+        android:id="@+id/like_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toStartOf="@id/right_guidline"
+        app:layout_constraintTop_toBottomOf="@id/player_artist_name"
+        android:layout_marginTop="52dp"
+        app:layout_constraintDimensionRatio="H,1:1"
+        >
+    </Button>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
