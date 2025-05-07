@@ -37,16 +37,15 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="36dp"
         android:layout_marginTop="20dp"
         android:layout_marginHorizontal="@dimen/main_margin_horizontal"
-        android:background="@drawable/edit_search_background"
-        android:minHeight="36dp">
+        android:background="@drawable/edit_search_background">
 
         <EditText
             android:id="@+id/search_edit_text"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:background="@drawable/stroke_width"
             android:drawableStart="@drawable/small_search_icon"
             android:drawablePadding="8dp"
