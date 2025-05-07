@@ -76,5 +76,14 @@
         <item name="android:textColor">?attr/colorOnPrimary</item>
     </style>
 
+    <style name="AudioplayerBottomTextView">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/YP_Text_gray</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+        <item name="android:textFontWeight">400</item>
+    </style>
+
 
 </resources>

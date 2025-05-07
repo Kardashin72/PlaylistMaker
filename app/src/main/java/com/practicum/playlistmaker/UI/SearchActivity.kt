@@ -2,6 +2,7 @@ package com.practicum.playlistmaker.UI
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -93,14 +94,20 @@ class SearchActivity : AppCompatActivity() {
             searchHistory.saveTrackToHistory(track, HISTORY_PREFERENCES_KEY)
             historyAdapter.tracks = searchHistory.loadSearchHistory(HISTORY_PREFERENCES_KEY)
             historyAdapter.notifyDataSetChanged()
+            val intent = Intent(this, PlayerActivity::class.java)
+            intent.putExtra("track", track)
+            startActivity(intent)
         }
         recycleView.adapter = searchAdapter
         recycleView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
 
         //настройка адаптера и layoutManager для истории поиска
-        historyAdapter = SearchRecycleViewAdapter(searchHistory.loadSearchHistory(HISTORY_PREFERENCES_KEY)) {
-                TODO()
+        historyAdapter = SearchRecycleViewAdapter(searchHistory.loadSearchHistory(HISTORY_PREFERENCES_KEY)) { track ->
+            val intent = Intent(this, PlayerActivity::class.java)
+            intent.putExtra("track", track)
+            startActivity(intent)
         }
+
         searchHistoryView.adapter = historyAdapter
         searchHistoryView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
 

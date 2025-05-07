@@ -13,7 +13,11 @@ private fun dtoTrackToTrack(dto: DtoTrack) : Track {
         trackName = dto.trackName,
         artistName = dto.artistName,
         trackTime = trackTimeConvert(dto.trackTime),
-        artworkUrl100 = dto.artworkUrl100
+        artworkUrl100 = dto.artworkUrl100,
+        collectionName = dto.collectionName,
+        releaseDate = dto.releaseDate,
+        primaryGenreName = dto.primaryGenreName,
+        country = dto.country
     )
 }
 
