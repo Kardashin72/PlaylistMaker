@@ -32,6 +32,7 @@ class SearchActivity : AppCompatActivity() {
         private const val CURSOR_POSITION = "CURSOR_POSITION"
         private const val HISTORY_PREFERENCES = "HISTORY_PREFERENCES"
         private const val HISTORY_PREFERENCES_KEY = "HISTORY_PREFERENCES_KEY"
+        const val INTENT_TRACK_KEY = "TRACK"
     }
 
     //список треков для RecycleViewAdapter
@@ -77,7 +78,7 @@ class SearchActivity : AppCompatActivity() {
         val searchHistory = SearchHistory(sharedPreferences)
 
         //обработка изменения состояния фокуса поля ввода текста
-        searchEditText.setOnFocusChangeListener { view, hasFocus ->
+        searchEditText.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus && searchEditText.text.isEmpty()
                 && searchHistory.hasHistory(HISTORY_PREFERENCES_KEY)) {
                 historyAdapter.tracks = searchHistory.loadSearchHistory(HISTORY_PREFERENCES_KEY)
@@ -95,7 +96,7 @@ class SearchActivity : AppCompatActivity() {
             historyAdapter.tracks = searchHistory.loadSearchHistory(HISTORY_PREFERENCES_KEY)
             historyAdapter.notifyDataSetChanged()
             val intent = Intent(this, PlayerActivity::class.java)
-            intent.putExtra("track", track)
+            intent.putExtra(INTENT_TRACK_KEY, track)
             startActivity(intent)
         }
         recycleView.adapter = searchAdapter
@@ -104,7 +105,7 @@ class SearchActivity : AppCompatActivity() {
         //настройка адаптера и layoutManager для истории поиска
         historyAdapter = SearchRecycleViewAdapter(searchHistory.loadSearchHistory(HISTORY_PREFERENCES_KEY)) { track ->
             val intent = Intent(this, PlayerActivity::class.java)
-            intent.putExtra("track", track)
+            intent.putExtra(INTENT_TRACK_KEY, track)
             startActivity(intent)
         }
 

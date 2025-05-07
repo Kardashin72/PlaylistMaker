@@ -79,6 +79,8 @@
     <style name="AudioplayerBottomTextView">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingTop">9dp</item>
+        <item name="android:paddingBottom">8dp</item>
         <item name="android:textColor">@color/YP_Text_gray</item>
         <item name="android:textSize">13sp</item>
         <item name="android:fontFamily">@font/ys_display_regular</item>
