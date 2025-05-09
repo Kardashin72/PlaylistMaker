@@ -24,6 +24,9 @@
             android:name=".UI.SettingsActivity"
             android:exported="false" />
         <activity
+            android:name=".UI.PlayerActivity"
+            android:exported="false"/>
+        <activity
             android:name=".UI.MainActivity"
             android:exported="true">
             <intent-filter>
