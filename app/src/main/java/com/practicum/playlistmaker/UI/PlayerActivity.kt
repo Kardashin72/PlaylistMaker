@@ -19,15 +19,6 @@ import com.practicum.playlistmaker.data.Track
 import com.practicum.playlistmaker.utils.dpToPx
 
 class PlayerActivity : AppCompatActivity() {
-    companion object {
-        private const val STATE_DEFAULT = 0
-        private const val STATE_PREPARED = 1
-        private const val STATE_PAUSED = 2
-        private const val STATE_PLAYING = 3
-        private const val FRAGMENT_DURATION = 30_000
-
-    }
-
     private var playerState = STATE_DEFAULT
     private lateinit var playerTopBar: MaterialToolbar
     private lateinit var trackArtwork: ImageView
@@ -48,7 +39,6 @@ class PlayerActivity : AppCompatActivity() {
     private var mediaPlayer = MediaPlayer()
     private val handler = Handler(Looper.getMainLooper())
     private var timerRunnable: Runnable? = null
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -171,8 +161,7 @@ class PlayerActivity : AppCompatActivity() {
                     }
                 }
             }
-        }
-        handler.post(timerRunnable!!)
+        }.also(handler::post)
     }
 
     private fun stopTimer() {
@@ -188,5 +177,13 @@ class PlayerActivity : AppCompatActivity() {
         val minutes = totalSeconds / 60
         val seconds = totalSeconds % 60
         return String.format("%02d:%02d", minutes, seconds)
+    }
+
+    companion object {
+        private const val STATE_DEFAULT = 0
+        private const val STATE_PREPARED = 1
+        private const val STATE_PAUSED = 2
+        private const val STATE_PLAYING = 3
+        private const val FRAGMENT_DURATION = 30_000
     }
 }

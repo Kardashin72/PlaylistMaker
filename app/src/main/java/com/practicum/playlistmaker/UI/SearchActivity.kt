@@ -28,22 +28,9 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-
 class SearchActivity : AppCompatActivity() {
-    companion object {
-        private const val EDIT_TEXT_KEY = "EDIT_TEXT_KEY"
-        private const val CURSOR_POSITION = "CURSOR_POSITION"
-        private const val HISTORY_PREFERENCES = "HISTORY_PREFERENCES"
-        private const val HISTORY_PREFERENCES_KEY = "HISTORY_PREFERENCES_KEY"
-        const val INTENT_TRACK_KEY = "TRACK"
-        private const val CLICK_DEBOUNCE_DELAY = 1000L
-        private const val SEARCH_DEBOUNCE_DELAY = 2000L
-    }
-
     private var isClickAllowed = true
-
     private val handler = Handler(Looper.getMainLooper())
-
     private val searchRunnable = Runnable { searchTrack() }
 
     //список треков для RecycleViewAdapter
@@ -101,7 +88,6 @@ class SearchActivity : AppCompatActivity() {
                 historyView.visibility = View.GONE
             }
         }
-
 
         //настройка адаптера и layoutManager для результатов поиска
         searchAdapter = SearchRecycleViewAdapter(trackList) { track ->
@@ -275,5 +261,15 @@ class SearchActivity : AppCompatActivity() {
             return
         }
         handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
+    }
+
+    companion object {
+        private const val EDIT_TEXT_KEY = "EDIT_TEXT_KEY"
+        private const val CURSOR_POSITION = "CURSOR_POSITION"
+        private const val HISTORY_PREFERENCES = "HISTORY_PREFERENCES"
+        private const val HISTORY_PREFERENCES_KEY = "HISTORY_PREFERENCES_KEY"
+        const val INTENT_TRACK_KEY = "TRACK"
+        private const val CLICK_DEBOUNCE_DELAY = 1000L
+        private const val SEARCH_DEBOUNCE_DELAY = 2000L
     }
 }
