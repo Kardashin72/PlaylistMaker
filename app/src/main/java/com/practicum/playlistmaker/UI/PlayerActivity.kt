@@ -1,6 +1,10 @@
 package com.practicum.playlistmaker.UI
 
+import android.media.MediaPlayer
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.view.View
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
@@ -15,6 +19,16 @@ import com.practicum.playlistmaker.data.Track
 import com.practicum.playlistmaker.utils.dpToPx
 
 class PlayerActivity : AppCompatActivity() {
+    companion object {
+        private const val STATE_DEFAULT = 0
+        private const val STATE_PREPARED = 1
+        private const val STATE_PAUSED = 2
+        private const val STATE_PLAYING = 3
+        private const val FRAGMENT_DURATION = 30_000
+
+    }
+
+    private var playerState = STATE_DEFAULT
     private lateinit var playerTopBar: MaterialToolbar
     private lateinit var trackArtwork: ImageView
     private lateinit var trackName: TextView
@@ -30,6 +44,11 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var releaseDate: TextView
     private lateinit var genreName: TextView
     private lateinit var country: TextView
+    private lateinit var previewUrl: String
+    private var mediaPlayer = MediaPlayer()
+    private val handler = Handler(Looper.getMainLooper())
+    private var timerRunnable: Runnable? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,6 +71,7 @@ class PlayerActivity : AppCompatActivity() {
         releaseDate = findViewById(R.id.release_date)
         genreName = findViewById(R.id.primary_genre_name)
         country = findViewById(R.id.country)
+        previewUrl = track?.previewUrl.toString()
 
         val artworkUrl = track?.artworkUrl100
         Glide.with(trackArtwork)
@@ -62,17 +82,111 @@ class PlayerActivity : AppCompatActivity() {
 
         trackName.text = track?.trackName
         artistName.text = track?.artistName
-        trackTimer.text = track?.trackTime
+        trackTimer.text = formatTime(0)
         trackTime.text = track?.trackTime
         album.text = track?.collectionName
 
         val index = track?.releaseDate?.indexOf('-')
-        releaseDate.text = index?.let { track.releaseDate.substring(0, it) }
+        releaseDate.text = index?.let { track?.releaseDate?.substring(0, it) }
         genreName.text = track?.primaryGenreName
         country.text = track?.country
+
 
         playerTopBar.setNavigationOnClickListener {
             finish()
         }
+        preparePlayer()
+        playButton.setOnClickListener { startPlayer() }
+        pauseButton.setOnClickListener { pausePlayer() }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        pausePlayer()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mediaPlayer.release()
+    }
+
+    private fun preparePlayer() {
+        mediaPlayer.setDataSource(previewUrl)
+        mediaPlayer.prepareAsync()
+        mediaPlayer.setOnPreparedListener {
+            playButton.isEnabled = true
+            playerState = STATE_PREPARED
+            playPauseVisibility()
+            updateTimerUI(0)
+        }
+        mediaPlayer.setOnCompletionListener {
+            playerState = STATE_PREPARED
+            playPauseVisibility()
+            stopTimer()
+            updateTimerUI(0)
+        }
+    }
+
+    private fun startPlayer() {
+        mediaPlayer.start()
+        playerState = STATE_PLAYING
+        playPauseVisibility()
+        startTimer()
+    }
+
+    private fun pausePlayer() {
+        mediaPlayer.pause()
+        playerState = STATE_PAUSED
+        playPauseVisibility()
+        stopTimer()
+    }
+
+    private fun playPauseVisibility() {
+        if (playerState in 0..2) {
+            pauseButton.visibility = View.INVISIBLE
+            playButton.visibility = View.VISIBLE
+        }
+        else {
+            pauseButton.visibility = View.VISIBLE
+            playButton.visibility = View.INVISIBLE
+        }
+    }
+
+    private fun startTimer() {
+        stopTimer()
+        timerRunnable = object : Runnable {
+            override fun run() {
+                if (playerState == STATE_PLAYING) {
+                    val currentPosition = mediaPlayer.currentPosition
+                    if (currentPosition >= FRAGMENT_DURATION) {
+                        mediaPlayer.pause()
+                        mediaPlayer.seekTo(0)
+                        playerState = STATE_PAUSED
+                        playPauseVisibility()
+                        stopTimer()
+                        updateTimerUI(0)
+                    } else {
+                        updateTimerUI(currentPosition)
+                        handler.postDelayed(this, 500)
+                    }
+                }
+            }
+        }
+        handler.post(timerRunnable!!)
+    }
+
+    private fun stopTimer() {
+        timerRunnable?.let { handler.removeCallbacks(it) }
+    }
+
+    private fun updateTimerUI(positionMs: Int) {
+        trackTimer.text = formatTime(positionMs)
+    }
+
+    private fun formatTime(positionMs: Int): String {
+        val totalSeconds = positionMs / 1000
+        val minutes = totalSeconds / 60
+        val seconds = totalSeconds % 60
+        return String.format("%02d:%02d", minutes, seconds)
     }
 }

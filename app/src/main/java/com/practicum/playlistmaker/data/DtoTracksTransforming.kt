@@ -17,7 +17,8 @@ private fun dtoTrackToTrack(dto: DtoTrack) : Track {
         collectionName = dto.collectionName,
         releaseDate = dto.releaseDate,
         primaryGenreName = dto.primaryGenreName,
-        country = dto.country
+        country = dto.country,
+        previewUrl = dto.previewUrl
     )
 }
 
