@@ -19,10 +19,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.domain.models.Track
-import com.practicum.playlistmaker.domain.api.TracksSearchHistoryInteractor
 import com.practicum.playlistmaker.domain.api.TracksSearchInteractor
 import com.practicum.playlistmaker.Creator
 import com.practicum.playlistmaker.domain.api.SearchResult
+import com.practicum.playlistmaker.domain.api.TracksSearchHistoryInteractor
 import com.practicum.playlistmaker.presentation.SearchRecycleViewAdapter
 
 class SearchActivity : AppCompatActivity() {
@@ -47,8 +47,12 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var backButton: Button
     private lateinit var clearSearchHistory: Button
     private lateinit var progressBar: ProgressBar
-    private lateinit var tracksSearchHistoryInteractor: TracksSearchHistoryInteractor
-    private lateinit var tracksSearchInteractor: TracksSearchInteractor
+    private val tracksSearchHistoryInteractor: TracksSearchHistoryInteractor by lazy {
+        Creator.provideTracksSearchHistoryInteractor(this)
+    }
+    private val tracksSearchInteractor: TracksSearchInteractor by lazy {
+        Creator.provideTracksSearchInteractor()
+    }
 
     //переменная для сохранения состояния активити
     private var savedText = ""
@@ -71,10 +75,6 @@ class SearchActivity : AppCompatActivity() {
         tracksSearchHistoryRecucleView = findViewById(R.id.search_history)
         clearSearchHistory = findViewById(R.id.clear_search_history)
         progressBar = findViewById(R.id.search_progress_bar)
-
-        //создание интеракторов для результатов поиска и для истории поиска
-        tracksSearchHistoryInteractor = Creator.provideTracksSearchHistoryInteractor(this)
-        tracksSearchInteractor = Creator.provideTracksSearchInteractor()
 
         //обработка изменения состояния фокуса поля ввода текста
         searchEditText.setOnFocusChangeListener { _, hasFocus ->

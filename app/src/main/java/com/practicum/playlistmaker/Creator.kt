@@ -15,10 +15,24 @@ import com.practicum.playlistmaker.domain.api.TracksSearchRepository
 import com.practicum.playlistmaker.domain.impl.SettingsInteractorImpl
 import com.practicum.playlistmaker.domain.impl.TracksSearchHistoryInteractorImpl
 import com.practicum.playlistmaker.domain.impl.TracksSearchInteractorImpl
+import com.practicum.playlistmaker.data.network.ItunesApiService
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 object Creator {
+    private fun provideRetrofit(): Retrofit {
+        return Retrofit.Builder()
+            .baseUrl("https://itunes.apple.com")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
+
+    private fun provideItunesApiService(): ItunesApiService {
+        return provideRetrofit().create(ItunesApiService::class.java)
+    }
+
     private fun getTracksRepository(): TracksSearchRepository {
-        return TracksSearchRepositoryImpl(RetrofitNetworkClient())
+        return TracksSearchRepositoryImpl(RetrofitNetworkClient(provideItunesApiService()))
     }
 
     fun provideTracksSearchInteractor(): TracksSearchInteractor {

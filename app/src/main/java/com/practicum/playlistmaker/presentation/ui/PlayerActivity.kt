@@ -18,6 +18,7 @@ import com.practicum.playlistmaker.domain.models.Track
 import com.practicum.playlistmaker.presentation.utils.dpToPx
 
 class PlayerActivity : AppCompatActivity() {
+    //объявление view без инициализации
     private var playerState = STATE_DEFAULT
     private lateinit var playerTopBar: MaterialToolbar
     private lateinit var trackArtwork: ImageView
@@ -43,9 +44,11 @@ class PlayerActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_audio_player)
 
+        //получение объекта трека через Intent
         val track = IntentCompat.getParcelableExtra(intent,
             SearchActivity.Companion.INTENT_TRACK_KEY, Track::class.java)
 
+        //инициализация view
         playerTopBar = findViewById(R.id.audioplayer_topbar)
         trackArtwork = findViewById(R.id.player_track_artwork)
         trackName = findViewById(R.id.player_track_name)
@@ -63,6 +66,7 @@ class PlayerActivity : AppCompatActivity() {
         country = findViewById(R.id.country)
         previewUrl = track?.previewUrl.toString()
 
+        //загрузка обложки трека в view
         val artworkUrl = track?.artworkUrl100
         Glide.with(trackArtwork)
             .load(artworkUrl?.replaceAfterLast('/',"512x512bb.jpg"))
@@ -70,31 +74,34 @@ class PlayerActivity : AppCompatActivity() {
             .transform(RoundedCorners(trackArtwork.context.dpToPx(8)))
             .into(trackArtwork)
 
+        //передача данных трека в view
         trackName.text = track?.trackName
         artistName.text = track?.artistName
         trackTimer.text = formatTime(0)
         trackTime.text = track?.trackTime
         album.text = track?.collectionName
-
         val index = track?.releaseDate?.indexOf('-')
         releaseDate.text = index?.let { track?.releaseDate?.substring(0, it) }
         genreName.text = track?.primaryGenreName
         country.text = track?.country
 
-
+        //обработка нажатия на кнопку "назад"
         playerTopBar.setNavigationOnClickListener {
             finish()
         }
+        //подготовка плеера, обработка нажатия на кнопку плей/пауза
         preparePlayer()
         playButton.setOnClickListener { startPlayer() }
         pauseButton.setOnClickListener { pausePlayer() }
     }
 
+    //пауза плеера при приостановке активити
     override fun onPause() {
         super.onPause()
         pausePlayer()
     }
 
+    //"очистка" плеера при уничтожении активити
     override fun onDestroy() {
         super.onDestroy()
         mediaPlayer.release()
