@@ -12,12 +12,8 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
-
-        //восстановление темы из shared_preferenes
-        val theme_shared_prefs = getSharedPreferences(SettingsActivity.Companion.THEME_PREFERENCES, MODE_PRIVATE)
-
-        val isDarkMode = theme_shared_prefs.getBoolean(SettingsActivity.Companion.SWITCHER_KEY, false)
-
+        val settingsInteractor = Creator.provideSettingsInteractor(this)
+        val isDarkMode = settingsInteractor.isDarkTheme()
         switchTheme(isDarkMode)
     }
 

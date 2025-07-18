@@ -45,35 +45,3 @@ class TracksSearchHistoryRepositoryImpl(
         const val HISTORY_PREFERENCES_KEY = "HISTORY_PREFERENCES_KEY"
     }
 }
-
-private fun Track.toDto(): TrackDto = TrackDto(
-    trackId = this.trackId,
-    trackName = this.trackName,
-    artistName = this.artistName,
-    trackTime = this.trackTime.toLongOrNull() ?: 0L,
-    artworkUrl100 = this.artworkUrl100,
-    collectionName = this.collectionName,
-    releaseDate = this.releaseDate,
-    primaryGenreName = this.primaryGenreName,
-    country = this.country,
-    previewUrl = this.previewUrl
-)
-
-private fun TrackDto.toDomain(): Track = Track(
-    trackId = this.trackId,
-    trackName = this.trackName,
-    artistName = this.artistName,
-    trackTime = trackTimeConvert(this.trackTime),
-    artworkUrl100 = this.artworkUrl100,
-    collectionName = this.collectionName,
-    releaseDate = this.releaseDate,
-    primaryGenreName = this.primaryGenreName,
-    country = this.country,
-    previewUrl = this.previewUrl
-)
-
-private fun trackTimeConvert(ms: Long): String {
-    val minutes = ms / 1000 / 60
-    val seconds = ms / 1000 % 60
-    return String.format("%02d:%02d", minutes, seconds)
-}

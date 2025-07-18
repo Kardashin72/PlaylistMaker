@@ -2,6 +2,7 @@ package com.practicum.playlistmaker.data
 
 import com.practicum.playlistmaker.data.dto.TracksSearchRequest
 import com.practicum.playlistmaker.data.dto.TracksSearchResponse
+import com.practicum.playlistmaker.data.utils.trackTimeConvert
 import com.practicum.playlistmaker.domain.api.SearchResult
 import com.practicum.playlistmaker.domain.api.TracksSearchRepository
 import com.practicum.playlistmaker.domain.models.Track
@@ -28,10 +29,4 @@ class TracksSearchRepositoryImpl(private val networkClient: NetworkClient) : Tra
             SearchResult.ConnectionError
         }
     }
-}
-
-private fun trackTimeConvert(ms: Long): String {
-    val minutes = ms / 1000 / 60
-    val seconds = ms / 1000 % 60
-    return String.format("%02d:%02d", minutes, seconds)
 }
