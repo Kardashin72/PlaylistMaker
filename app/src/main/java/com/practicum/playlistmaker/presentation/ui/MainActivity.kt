@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.UI
+package com.practicum.playlistmaker.presentation.ui
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button

@@ -1,6 +1,5 @@
-package com.practicum.playlistmaker.UI
+package com.practicum.playlistmaker.presentation
 
-import com.practicum.playlistmaker.utils.dpToPx
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,7 +9,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.data.Track
+import com.practicum.playlistmaker.domain.models.Track
+import com.practicum.playlistmaker.presentation.utils.dpToPx
 
 class SearchRecycleViewAdapter (
     var tracks: List<Track>,

@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.UI
+package com.practicum.playlistmaker.presentation.ui
 
 import android.content.Intent
 import android.os.Bundle
@@ -7,8 +7,10 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
 import com.google.android.material.switchmaterial.SwitchMaterial
+import com.practicum.playlistmaker.Creator
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.data.App
+import com.practicum.playlistmaker.App
+import com.practicum.playlistmaker.domain.api.SettingsInteractor
 
 class SettingsActivity : AppCompatActivity() {
 
@@ -17,24 +19,22 @@ class SettingsActivity : AppCompatActivity() {
         const val SWITCHER_KEY = "SWITCHER_KEY"
     }
 
+    private lateinit var settingsInteractor: SettingsInteractor
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
 
-        //инициализация и обработка нажатия на свитчер темы с сохранением текущего
-        //состояния в shared_preferences
-        val theme_shared_prefs = getSharedPreferences(THEME_PREFERENCES, MODE_PRIVATE)
+        settingsInteractor = Creator.provideSettingsInteractor(this)
+
+        //инициализация и обработка нажатия на свитчер темы
         val themeSwitcher = findViewById<SwitchMaterial>(R.id.switch_theme_button)
-        themeSwitcher.isChecked = theme_shared_prefs.getBoolean(SWITCHER_KEY, false)
+        themeSwitcher.isChecked = settingsInteractor.isDarkTheme()
 
-
-        themeSwitcher.setOnCheckedChangeListener { switcher, checked ->
+        themeSwitcher.setOnCheckedChangeListener { _, checked ->
             (applicationContext as App).switchTheme(checked)
-            theme_shared_prefs.edit()
-                .putBoolean(SWITCHER_KEY, checked)
-                .apply()
+            settingsInteractor.setDarkTheme(checked)
         }
-
 
         //инициализация и обработка нажатия на кнопку "назад"
         val backButton = findViewById<Button>(R.id.settings_back)
@@ -47,7 +47,7 @@ class SettingsActivity : AppCompatActivity() {
         shareButton.setOnClickListener {
             val shareIntent = Intent(Intent.ACTION_SEND).apply {
                 putExtra(Intent.EXTRA_TEXT, getString(R.string.share_link))
-                type = "text/plain"
+                setType("text/plain")
             }
             val chooser = Intent.createChooser(shareIntent, getString(R.string.share_chooser_text))
             startActivity(chooser)
@@ -57,7 +57,7 @@ class SettingsActivity : AppCompatActivity() {
         val supportButton = findViewById<Button>(R.id.supportButton)
         supportButton.setOnClickListener {
             val supportIntent = Intent(Intent.ACTION_SEND).apply {
-                type = "message/rfc822"
+                setType("message/rfc822")
                 putExtra(Intent.EXTRA_EMAIL, arrayOf(getString(R.string.support_email)))
                 putExtra(Intent.EXTRA_SUBJECT, getString(R.string.support_message_topic))
                 putExtra(Intent.EXTRA_TEXT, getString(R.string.support_message))
@@ -74,7 +74,7 @@ class SettingsActivity : AppCompatActivity() {
         userAgreementButton.setOnClickListener {
             val userAgreementIntent = Intent(Intent.ACTION_VIEW).apply {
 
-                data = getString(R.string.user_agreement_link).toUri()
+                setData(getString(R.string.user_agreement_link).toUri())
             }
             startActivity(userAgreementIntent)
         }
