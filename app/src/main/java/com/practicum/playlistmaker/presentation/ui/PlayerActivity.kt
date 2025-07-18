@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.UI
+package com.practicum.playlistmaker.presentation.ui
 
 import android.media.MediaPlayer
 import android.os.Bundle
@@ -14,9 +14,8 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.google.android.material.appbar.MaterialToolbar
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.UI.SearchActivity.Companion.INTENT_TRACK_KEY
-import com.practicum.playlistmaker.data.Track
-import com.practicum.playlistmaker.utils.dpToPx
+import com.practicum.playlistmaker.domain.models.Track
+import com.practicum.playlistmaker.presentation.utils.dpToPx
 
 class PlayerActivity : AppCompatActivity() {
     private var playerState = STATE_DEFAULT
@@ -44,7 +43,8 @@ class PlayerActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_audio_player)
 
-        val track = IntentCompat.getParcelableExtra(intent, INTENT_TRACK_KEY, Track::class.java)
+        val track = IntentCompat.getParcelableExtra(intent,
+            SearchActivity.Companion.INTENT_TRACK_KEY, Track::class.java)
 
         playerTopBar = findViewById(R.id.audioplayer_topbar)
         trackArtwork = findViewById(R.id.player_track_artwork)

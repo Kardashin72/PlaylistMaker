@@ -1,9 +1,8 @@
-package com.practicum.playlistmaker.data
+package com.practicum.playlistmaker
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
-import com.practicum.playlistmaker.UI.SettingsActivity.Companion.SWITCHER_KEY
-import com.practicum.playlistmaker.UI.SettingsActivity.Companion.THEME_PREFERENCES
+import com.practicum.playlistmaker.presentation.ui.SettingsActivity
 
 class App : Application() {
 
@@ -15,9 +14,9 @@ class App : Application() {
         super.onCreate()
 
         //восстановление темы из shared_preferenes
-        val theme_shared_prefs = getSharedPreferences(THEME_PREFERENCES, MODE_PRIVATE)
+        val theme_shared_prefs = getSharedPreferences(SettingsActivity.Companion.THEME_PREFERENCES, MODE_PRIVATE)
 
-        val isDarkMode = theme_shared_prefs.getBoolean(SWITCHER_KEY, false)
+        val isDarkMode = theme_shared_prefs.getBoolean(SettingsActivity.Companion.SWITCHER_KEY, false)
 
         switchTheme(isDarkMode)
     }
