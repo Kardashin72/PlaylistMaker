@@ -13,7 +13,7 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/settings_back"
+            android:id="@+id/backButtonSettings"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"

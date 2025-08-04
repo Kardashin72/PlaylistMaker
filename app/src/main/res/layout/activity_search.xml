@@ -17,7 +17,7 @@
             android:layout_marginTop="12dp">
 
             <Button
-                android:id="@+id/search_back_buttton"
+                android:id="@+id/backButtonSearch"
                 style="@style/SettingsMenuButtonsStyle"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -47,7 +47,7 @@
             android:background="@drawable/edit_search_background">
 
             <EditText
-                android:id="@+id/search_edit_text"
+                android:id="@+id/searchEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/stroke_width"
@@ -67,7 +67,7 @@
                 android:textFontWeight="400" />
 
             <Button
-                android:id="@+id/clear_text_button"
+                android:id="@+id/clearSearchTextButton"
                 android:layout_width="48dp"
                 android:layout_height="match_parent"
                 android:layout_gravity="end"
@@ -80,7 +80,7 @@
         </FrameLayout>
 
         <LinearLayout
-            android:id="@+id/history_view"
+            android:id="@+id/historyView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
@@ -103,7 +103,7 @@
             </TextView>
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/search_history"
+                android:id="@+id/searchHistoryRecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="183dp"
                 android:layout_marginTop="8dp"
@@ -112,7 +112,7 @@
             </androidx.recyclerview.widget.RecyclerView>
 
             <Button
-                android:id="@+id/clear_search_history"
+                android:id="@+id/clearSearchHistoryButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:backgroundTint="?attr/colorOnPrimary"
@@ -134,7 +134,7 @@
             >
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/search_recycle_view"
+                android:id="@+id/searchRecycleView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginTop="@dimen/main_margin_vertical"
@@ -143,7 +143,7 @@
             </androidx.recyclerview.widget.RecyclerView>
 
             <LinearLayout
-                android:id="@+id/not_found_error"
+                android:id="@+id/notFoundErrorMessage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
@@ -171,7 +171,7 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/search_connection_error"
+                android:id="@+id/connectionErrorMessage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
@@ -199,7 +199,7 @@
                 </TextView>
 
                 <Button
-                    android:id="@+id/search_refresh_button"
+                    android:id="@+id/searchRefreshButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
@@ -218,7 +218,7 @@
     </LinearLayout>
 
     <ProgressBar
-        android:id="@+id/search_progress_bar"
+        android:id="@+id/progressBar"
         android:layout_width="44dp"
         android:layout_height="44dp"
         android:layout_gravity="center"

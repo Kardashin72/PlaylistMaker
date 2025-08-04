@@ -10,41 +10,36 @@ import com.google.android.material.switchmaterial.SwitchMaterial
 import com.practicum.playlistmaker.Creator
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.App
+import com.practicum.playlistmaker.databinding.ActivitySettingsBinding
 import com.practicum.playlistmaker.domain.api.SettingsInteractor
 
 class SettingsActivity : AppCompatActivity() {
-
-    companion object {
-        const val THEME_PREFERENCES = "THEME_PREFERENCES"
-        const val SWITCHER_KEY = "SWITCHER_KEY"
-    }
-
     private lateinit var settingsInteractor: SettingsInteractor
+    private lateinit var binding: ActivitySettingsBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_settings)
+        binding = ActivitySettingsBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         settingsInteractor = Creator.provideSettingsInteractor(this)
 
-        //инициализация и обработка нажатия на свитчер темы
-        val themeSwitcher = findViewById<SwitchMaterial>(R.id.switch_theme_button)
-        themeSwitcher.isChecked = settingsInteractor.isDarkTheme()
+        //обработка нажатия на кнопку "назад"
+        binding.backButtonSettings.setOnClickListener {
+            finish()
+        }
 
-        themeSwitcher.setOnCheckedChangeListener { _, checked ->
+        //обработка нажатия на свитчер темы
+        binding.switchThemeButton
+        binding.switchThemeButton.isChecked = settingsInteractor.isDarkTheme()
+
+        binding.switchThemeButton.setOnCheckedChangeListener { _, checked ->
             (applicationContext as App).switchTheme(checked)
             settingsInteractor.setDarkTheme(checked)
         }
 
-        //инициализация и обработка нажатия на кнопку "назад"
-        val backButton = findViewById<Button>(R.id.settings_back)
-        backButton.setOnClickListener {
-            finish()
-        }
-
-        //инициализация и обработка нажатия на кнопку "поделиться"
-        val shareButton = findViewById<Button>(R.id.shareButton)
-        shareButton.setOnClickListener {
+        //обработка нажатия на кнопку "поделиться"
+        binding.shareButton.setOnClickListener {
             val shareIntent = Intent(Intent.ACTION_SEND).apply {
                 putExtra(Intent.EXTRA_TEXT, getString(R.string.share_link))
                 setType("text/plain")
@@ -53,9 +48,8 @@ class SettingsActivity : AppCompatActivity() {
             startActivity(chooser)
         }
 
-        //инициализация и обработка нажатия на кнопку "написать в поддержку"
-        val supportButton = findViewById<Button>(R.id.supportButton)
-        supportButton.setOnClickListener {
+        //обработка нажатия на кнопку "написать в поддержку"
+        binding.supportButton.setOnClickListener {
             val supportIntent = Intent(Intent.ACTION_SEND).apply {
                 setType("message/rfc822")
                 putExtra(Intent.EXTRA_EMAIL, arrayOf(getString(R.string.support_email)))
@@ -69,9 +63,8 @@ class SettingsActivity : AppCompatActivity() {
             }
         }
 
-        //инициализация и обработка нажатия на кнопку "пользовательское соглашение"
-        val userAgreementButton = findViewById<Button>(R.id.userAgreementButton)
-        userAgreementButton.setOnClickListener {
+        //обработка нажатия на кнопку "пользовательское соглашение"
+        binding.userAgreementButton.setOnClickListener {
             val userAgreementIntent = Intent(Intent.ACTION_VIEW).apply {
 
                 setData(getString(R.string.user_agreement_link).toUri())

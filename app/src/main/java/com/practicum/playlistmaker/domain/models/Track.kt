@@ -4,6 +4,8 @@ import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
+//releaseDate и previewUrl сделал nullble, потому что при поисковом
+//запросе "ягода" приложение крашится с NPE по этим полям
 data class Track (
     val trackId: Int,
     val trackName: String,
@@ -11,10 +13,10 @@ data class Track (
     val trackTime: String,
     val artworkUrl100: String,
     val collectionName: String,
-    val releaseDate: String,
+    val releaseDate: String?,
     val primaryGenreName: String,
     val country: String,
-    val previewUrl: String
+    val previewUrl: String?
 ): Parcelable
 
 
