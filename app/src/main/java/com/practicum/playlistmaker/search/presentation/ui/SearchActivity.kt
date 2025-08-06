@@ -11,14 +11,15 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.practicum.playlistmaker.search.domain.model.Track
-import com.practicum.playlistmaker.search.domain.api.TracksSearchInteractor
 import com.practicum.playlistmaker.creator.Creator
 import com.practicum.playlistmaker.databinding.ActivitySearchBinding
 import com.practicum.playlistmaker.player.presentation.ui.PlayerActivity
-import com.practicum.playlistmaker.search.domain.api.SearchResult
 import com.practicum.playlistmaker.search.domain.api.TracksSearchHistoryInteractor
+import com.practicum.playlistmaker.search.presentation.viewmodel.SearchScreenState
+import com.practicum.playlistmaker.search.presentation.viewmodel.SearchViewModel
 
 class SearchActivity : AppCompatActivity() {
     private var isClickAllowed = true
@@ -28,18 +29,11 @@ class SearchActivity : AppCompatActivity() {
     //список треков для RecycleViewAdapter
     var tracks = ArrayList<Track>()
 
+    private lateinit var viewModel: SearchViewModel
     private lateinit var searchAdapter: SearchRecycleViewAdapter
     private lateinit var searchHistoryAdapter: SearchRecycleViewAdapter
     private lateinit var binding: ActivitySearchBinding
-    private val tracksSearchHistoryInteractor: TracksSearchHistoryInteractor by lazy {
-        Creator.provideTracksSearchHistoryInteractor(this)
-    }
-    private val tracksSearchInteractor: TracksSearchInteractor by lazy {
-        Creator.provideTracksSearchInteractor()
-    }
 
-    //переменная для сохранения состояния активити
-    private var savedText = ""
 
     //старт активити
     @SuppressLint("MissingInflatedId")
@@ -48,46 +42,89 @@ class SearchActivity : AppCompatActivity() {
         binding = ActivitySearchBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        //обработка изменения состояния фокуса поля ввода текста
-        binding.searchEditText.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus && binding.searchEditText.text.isEmpty()
-                && tracksSearchHistoryInteractor.hasHistory()) {
-                searchHistoryAdapter.tracks = ArrayList(tracksSearchHistoryInteractor.loadSearchHistory())
-                searchHistoryAdapter.notifyDataSetChanged()
-                binding.historyView.visibility = View.VISIBLE
-            } else {
-                binding.historyView.visibility = View.GONE
+        setupViewModel()
+        setupClickListeners()
+        setupRecyclerViews()
+        setupTextWatcher()
+        observeViewModel()
+    }
+
+    private fun updateUI(state: SearchScreenState) {
+        when (state.screenStatus) {
+            is SearchScreenState.ScreenStatus.Default -> {
+                binding.apply {
+                    progressBar.visibility = View.GONE
+                    searchRecycleView.visibility = View.GONE
+                    notFoundErrorMessage.visibility = View.GONE
+                    connectionErrorMessage.visibility = View.GONE
+                }
+            }
+            is SearchScreenState.ScreenStatus.Loading -> {
+                binding.apply {
+                    progressBar.visibility = View.VISIBLE
+                    searchRecycleView.visibility = View.GONE
+                    notFoundErrorMessage.visibility = View.GONE
+                    connectionErrorMessage.visibility = View.GONE
+                }
+            }
+            is SearchScreenState.ScreenStatus.LoadSuccess -> {
+                binding.apply {
+                    progressBar.visibility = View.GONE
+                    searchRecycleView.visibility = View.VISIBLE
+                    notFoundErrorMessage.visibility = View.GONE
+                    connectionErrorMessage.visibility = View.GONE
+                }
+                searchAdapter.tracks = ArrayList(state.tracks)
+                searchAdapter.notifyDataSetChanged()
+            }
+            is SearchScreenState.ScreenStatus.NotFoundError -> {
+                binding.apply {
+                    progressBar.visibility = View.GONE
+                    searchRecycleView.visibility = View.GONE
+                    notFoundErrorMessage.visibility = View.VISIBLE
+                    connectionErrorMessage.visibility = View.GONE
+                }
+            }
+            is SearchScreenState.ScreenStatus.ConnectionError -> {
+                binding.apply {
+                    progressBar.visibility = View.GONE
+                    searchRecycleView.visibility = View.GONE
+                    notFoundErrorMessage.visibility = View.GONE
+                    connectionErrorMessage.visibility = View.VISIBLE
+                }
             }
         }
+    }
 
-        //настройка адаптера и layoutManager для результатов поиска
-        searchAdapter = SearchRecycleViewAdapter(tracks) { track ->
-            tracksSearchHistoryInteractor.saveTrackToHistory(track)
-            searchHistoryAdapter.tracks = ArrayList(tracksSearchHistoryInteractor.loadSearchHistory())
-            searchHistoryAdapter.notifyDataSetChanged()
-            if (clickDebounce()) {
-                val intent = Intent(this, PlayerActivity::class.java)
-                intent.putExtra(INTENT_TRACK_KEY, track)
-                startActivity(intent)
-            }
+    private fun observeViewModel() {
+        viewModel.screenState.observe(this) { state ->
+            updateUI(state)
         }
-        binding.searchRecycleView.adapter = searchAdapter
-        binding.searchRecycleView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+    }
 
-        //настройка адаптера и layoutManager для истории поиска
-        searchHistoryAdapter =
-            SearchRecycleViewAdapter(ArrayList(tracksSearchHistoryInteractor.loadSearchHistory())) { track ->
-                val intent = Intent(this, PlayerActivity::class.java)
-                intent.putExtra(INTENT_TRACK_KEY, track)
-                startActivity(intent)
+    private fun setupViewModel() {
+        val tracksSearchHistoryInteractor: TracksSearchHistoryInteractor by lazy {
+            Creator.provideTracksSearchHistoryInteractor(this)
+        }
+        viewModel = ViewModelProvider(
+            this,
+            SearchViewModel.getFactory(tracksSearchHistoryInteractor)
+        ) [SearchViewModel :: class.java]
+    }
+
+    private fun setupClickListeners() {
+        //обработка нажатия на кнопку "ОК" экранной клавиатуры
+        binding.searchEditText.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                searchTrack()
+                true
             }
+            false
+        }
 
-        binding.searchHistoryRecyclerView.adapter = searchHistoryAdapter
-        binding.searchHistoryRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-
-        binding.clearSearchHistoryButton.setOnClickListener {
-            tracksSearchHistoryInteractor.clearSearchHistory()
-            binding.searchHistoryRecyclerView.visibility = View.GONE
+        //обработка нажатия на кнопку "Обновить" в случае отсутствия интернета
+        binding.searchRefreshButton.setOnClickListener {
+            searchTrack()
         }
 
         //обработка нажатия на кнопку "Назад"
@@ -98,18 +135,52 @@ class SearchActivity : AppCompatActivity() {
         //обработка нажатия на кнопку очистки строки ввода
         binding.clearSearchTextButton.setOnClickListener {
             binding.searchEditText.text.clear()
-            tracks.clear()
+            viewModel.clearSearchQuery()
             hideKeyboard(binding.searchEditText)
-            binding.searchRecycleView.visibility = View.GONE
-            binding.notFoundErrorMessage.visibility = View.GONE
-            binding.connectionErrorMessage.visibility = View.GONE
         }
 
-        //обработка нажатия на кнопку "Обновить" в случае отсутствия интернета
-        binding.searchRefreshButton.setOnClickListener {
-            searchTrack()
+        //обработка нажатия на кнопку очистки истории поиска
+        binding.clearSearchHistoryButton.setOnClickListener {
+            viewModel.clearSearchHistory()
         }
 
+        //обработка изменения состояния фокуса поля ввода текста
+        binding.searchEditText.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus && binding.searchEditText.text.isEmpty()
+                && viewModel.isHistoryNotEmpty()) {
+
+                binding.historyView.visibility = View.VISIBLE
+            } else {
+                binding.historyView.visibility = View.GONE
+            }
+        }
+    }
+
+    private fun setupRecyclerViews() {
+        //настройка адаптера и layoutManager для результатов поиска
+        searchAdapter = SearchRecycleViewAdapter(tracks) { track ->
+            viewModel.saveTrackToHistory(track)
+            updateSearchHistory()
+            if (clickDebounce()) {
+                val intent = Intent(this, PlayerActivity::class.java)
+                intent.putExtra(INTENT_TRACK_KEY, track)
+                startActivity(intent)
+            }
+        }
+        binding.searchRecycleView.adapter = searchAdapter
+        binding.searchRecycleView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+
+        //настройка адаптера и layoutManager для истории поиска
+        searchHistoryAdapter = SearchRecycleViewAdapter(ArrayList()) { track ->
+            val intent = Intent(this, PlayerActivity::class.java)
+            intent.putExtra(INTENT_TRACK_KEY, track)
+            startActivity(intent)
+        }
+        binding.searchHistoryRecyclerView.adapter = searchHistoryAdapter
+        binding.searchHistoryRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+    }
+
+    private fun setupTextWatcher() {
         //настройка TextWatcher
         val searchTextWatcher = object : TextWatcher {
             override fun beforeTextChanged(
@@ -124,7 +195,7 @@ class SearchActivity : AppCompatActivity() {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 binding.clearSearchTextButton.visibility = if (!s.isNullOrEmpty()) View.VISIBLE else View.GONE
-                if (binding.searchEditText.hasFocus() && s?.isEmpty() == true && tracksSearchHistoryInteractor.hasHistory()) {
+                if (binding.searchEditText.hasFocus() && s?.isEmpty() == true && viewModel.isHistoryNotEmpty()) {
                     binding.historyView.visibility = View.VISIBLE
                 } else {
                     binding.historyView.visibility = View.GONE
@@ -133,43 +204,37 @@ class SearchActivity : AppCompatActivity() {
             }
 
             override fun afterTextChanged(s: Editable?) {
-                savedText = s?.toString() ?: ""
-                if (savedText.isEmpty()) {
-                    tracks.clear()
-                    binding.searchRecycleView.visibility = View.GONE
-                    binding.notFoundErrorMessage.visibility = View.GONE
-                    binding.connectionErrorMessage.visibility = View.GONE
+                val text = s?.toString() ?: ""
+                viewModel.updateSearchText(text)
+                if (text.isEmpty()) {
+                    viewModel.clearSearchQuery()
                 }
             }
         }
 
         //установка TextWatcher на EditText
         binding.searchEditText.addTextChangedListener(searchTextWatcher)
+    }
 
-        //обработка нажатия на кнопку "ОК" экранной клавиатуры
-        binding.searchEditText.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                searchTrack()
-                true
-            }
-            false
-        }
+    private fun updateSearchHistory() {
+        searchHistoryAdapter.tracks = viewModel.getSearchHistory()
+        searchHistoryAdapter.notifyDataSetChanged()
     }
 
     //сохранение текста из строки ввода
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putString(EDIT_TEXT_KEY, binding.searchEditText.text.toString())
+        outState.putBundle(KEY_VIEW_MODEL_STATE, viewModel.saveState())
         outState.putInt(CURSOR_POSITION, binding.searchEditText.selectionStart)
     }
 
     //восстановление строки ввода из сохраненного Bundle
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        savedText = savedInstanceState.getString(EDIT_TEXT_KEY) ?: ""
+        val viewModelState = savedInstanceState.getBundle(KEY_VIEW_MODEL_STATE)
+        viewModel.restoreState(viewModelState)
         val cursorPosition = savedInstanceState.getInt(CURSOR_POSITION, 0)
-        binding.searchEditText.setText(savedText)
-        binding.searchEditText.setSelection(cursorPosition.coerceIn(0, savedText.length))
+        binding.searchEditText.setSelection(cursorPosition.coerceIn(0, binding.searchEditText.text.length))
     }
 
     //функция, отвечающая за отключение клавиатуры при нажатии на кнопку очистки строки ввода
@@ -180,49 +245,10 @@ class SearchActivity : AppCompatActivity() {
         view.clearFocus()
     }
 
-    //функция поиска трека через API
+    //функция поиска трека через viewModel
     private fun searchTrack() {
-        binding.apply {
-            progressBar.visibility = View.VISIBLE
-            searchRecycleView.visibility = View.GONE
-            notFoundErrorMessage.visibility = View.GONE
-            connectionErrorMessage.visibility = View.GONE
-        }
-        tracksSearchInteractor.searchTracks(binding.searchEditText.text.toString(), object : TracksSearchInteractor.TracksConsumer {
-            override fun consume(result: SearchResult) {
-                runOnUiThread {
-                    binding.progressBar.visibility = View.GONE
-                    when (result) {
-                        is SearchResult.Success -> {
-                            if (result.tracks.isNotEmpty()) {
-                                tracks.clear()
-                                tracks.addAll(result.tracks)
-                                searchAdapter.notifyDataSetChanged()
-                                binding.apply {
-                                    notFoundErrorMessage.visibility = View.GONE
-                                    connectionErrorMessage.visibility = View.GONE
-                                    searchRecycleView.visibility = View.VISIBLE
-                                }
-                            } else {
-                                tracks.clear()
-                                binding.apply {
-                                    searchRecycleView.visibility = View.GONE
-                                    connectionErrorMessage.visibility = View.GONE
-                                    notFoundErrorMessage.visibility = View.VISIBLE
-                                }
-                            }
-                        }
-                        is SearchResult.ConnectionError -> {
-                            binding.apply {
-                                connectionErrorMessage.visibility = View.VISIBLE
-                                searchRecycleView.visibility = View.GONE
-                                notFoundErrorMessage.visibility = View.GONE
-                            }
-                        }
-                    }
-                }
-            }
-        })
+       val query = binding.searchEditText.text.toString()
+        viewModel.searchTrack(query)
     }
 
     private fun clickDebounce() : Boolean {
@@ -243,9 +269,8 @@ class SearchActivity : AppCompatActivity() {
     }
 
     companion object {
-        private const val EDIT_TEXT_KEY = "EDIT_TEXT_KEY"
+        private const val KEY_VIEW_MODEL_STATE = "VIEW_MODEL_STATE"
         private const val CURSOR_POSITION = "CURSOR_POSITION"
-        private const val HISTORY_PREFERENCES_KEY = "HISTORY_PREFERENCES_KEY"
         const val INTENT_TRACK_KEY = "TRACK"
         private const val CLICK_DEBOUNCE_DELAY = 1000L
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
