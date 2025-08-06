@@ -11,6 +11,7 @@ import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.App
 import com.practicum.playlistmaker.databinding.ActivitySettingsBinding
 import com.practicum.playlistmaker.settings.domain.api.SettingsInteractor
+import com.practicum.playlistmaker.settings.presentation.viewmodel.SettingsAction
 import com.practicum.playlistmaker.settings.presentation.viewmodel.SettingsViewModel
 import com.practicum.playlistmaker.share.domain.api.ShareFunctionsInteractor
 import com.practicum.playlistmaker.share.domain.model.ContactSupportData
@@ -33,10 +34,10 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun setupViewModel() {
         val settingsInteractor: SettingsInteractor by lazy {
-            Creator.provideSettingsInteractor(this)
+            Creator.provideSettingsInteractor()
         }
         val shareFunctionsInteractor: ShareFunctionsInteractor by lazy {
-            Creator.provideShareFunctionsInteractor(this)
+            Creator.provideShareFunctionsInteractor()
         }
         viewModel = ViewModelProvider(
             this,
@@ -105,22 +106,13 @@ class SettingsActivity : AppCompatActivity() {
     private fun observeViewModel() {
         viewModel.screenState.observe(this) { state ->
             binding.switchThemeButton.isChecked = state.isDarkTheme
+        }
 
-            // Обрабатываем данные и после выполнения обнуляем их для
-            //предотвращения повторного вызова при пересоздании активити
-            state.shareAppData?.let { data ->
-                shareApp(data)
-                viewModel.clearShareData()
-            }
-
-            state.contactSupportData?.let { data ->
-                contactSupport(data)
-                viewModel.clearShareData()
-            }
-
-            state.userAgreementData?.let { data ->
-                openUserAgreement(data)
-                viewModel.clearShareData()
+        viewModel.action.observe(this) { action ->
+            when (action) {
+                is SettingsAction.ShareApp -> shareApp(action.data)
+                is SettingsAction.ContactSupport -> contactSupport(action.data)
+                is SettingsAction.OpenUserAgreement -> openUserAgreement(action.data)
             }
         }
     }

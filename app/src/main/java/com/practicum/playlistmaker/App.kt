@@ -12,7 +12,8 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        val settingsInteractor = Creator.provideSettingsInteractor(this)
+        Creator.init(this)
+        val settingsInteractor = Creator.provideSettingsInteractor()
         val isDarkMode = settingsInteractor.isDarkTheme()
         switchTheme(isDarkMode)
     }

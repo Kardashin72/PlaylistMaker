@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import com.practicum.playlistmaker.core.presentation.utils.SingleLiveEvent
 import com.practicum.playlistmaker.settings.domain.api.SettingsInteractor
 import com.practicum.playlistmaker.share.domain.api.ShareFunctionsInteractor
 import com.practicum.playlistmaker.share.domain.model.ContactSupportData
@@ -14,10 +15,13 @@ import com.practicum.playlistmaker.share.domain.model.UserAgreementData
 
 data class SettingsScreenState(
     val isDarkTheme: Boolean = false,
-    val shareAppData: ShareAppData? = null,
-    val contactSupportData: ContactSupportData? = null,
-    val userAgreementData: UserAgreementData? = null
 )
+
+sealed class SettingsAction {
+    data class ShareApp(val data: ShareAppData) : SettingsAction()
+    data class ContactSupport(val data: ContactSupportData) : SettingsAction()
+    data class OpenUserAgreement(val data: UserAgreementData) : SettingsAction()
+}
 
 class SettingsViewModel(
     private val settingsInteractor: SettingsInteractor,
@@ -25,6 +29,9 @@ class SettingsViewModel(
 ) : ViewModel() {
     private val _screenState = MutableLiveData<SettingsScreenState>()
     val screenState: LiveData<SettingsScreenState> = _screenState
+
+    private val _action = SingleLiveEvent<SettingsAction>()
+    val action: LiveData<SettingsAction> = _action
 
     init {
         loadSettings()
@@ -37,30 +44,19 @@ class SettingsViewModel(
 
     fun setDarkTheme(enabled: Boolean) {
         settingsInteractor.setDarkTheme(enabled)
-        _screenState.postValue(_screenState.value?.copy(isDarkTheme = enabled))
+        _screenState.postValue(SettingsScreenState(isDarkTheme = enabled))
     }
 
     fun shareApp() {
-        val data = shareFunctionsInteractor.getShareData()
-        _screenState.postValue(_screenState.value?.copy(shareAppData = data))
+        _action.value = SettingsAction.ShareApp(shareFunctionsInteractor.getShareData())
     }
 
     fun contactSupport() {
-        val data = shareFunctionsInteractor.getSupportData()
-        _screenState.postValue(_screenState.value?.copy(contactSupportData = data))
+        _action.value = SettingsAction.ContactSupport(shareFunctionsInteractor.getSupportData())
     }
 
     fun openUserAgreement() {
-        val data = shareFunctionsInteractor.getUserAgreementData()
-        _screenState.postValue(_screenState.value?.copy(userAgreementData = data))
-    }
-
-    fun clearShareData() {
-        _screenState.postValue(_screenState.value?.copy(
-            shareAppData = null,
-            contactSupportData = null,
-            userAgreementData = null
-        ))
+        _action.value = SettingsAction.OpenUserAgreement(shareFunctionsInteractor.getUserAgreementData())
     }
 
     companion object {

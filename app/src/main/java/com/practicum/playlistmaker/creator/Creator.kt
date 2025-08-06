@@ -3,6 +3,10 @@ package com.practicum.playlistmaker.creator
 import android.content.Context
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.practicum.playlistmaker.player.data.PlayerRepositoryImpl
+import com.practicum.playlistmaker.player.domain.api.PlayerInteractor
+import com.practicum.playlistmaker.player.domain.api.PlayerRepository
+import com.practicum.playlistmaker.player.domain.impl.PlayerInteractorImpl
 import com.practicum.playlistmaker.settings.data.SettingsRepositoryImpl
 import com.practicum.playlistmaker.search.data.TracksSearchHistoryRepositoryImpl
 import com.practicum.playlistmaker.search.data.TracksSearchRepositoryImpl
@@ -26,6 +30,12 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object Creator {
+    private lateinit var applicationContext: Context
+
+    fun init(context: Context) {
+        applicationContext = context.applicationContext
+    }
+
     private fun provideRetrofit(): Retrofit {
         return Retrofit.Builder()
             .baseUrl("https://itunes.apple.com")
@@ -45,26 +55,34 @@ object Creator {
         return TracksSearchInteractorImpl(getTracksRepository())
     }
 
-    private fun getTracksSearchHistoryRepository(context: Context): TracksSearchHistoryRepository {
+    private fun getTracksSearchHistoryRepository(): TracksSearchHistoryRepository {
         return TracksSearchHistoryRepositoryImpl(PrefsStorageClient<ArrayList<Track>>(
-            context,
+            applicationContext,
             PrefsStorageClient.HISTORY_PREFERENCES_KEY,
             object : TypeToken<ArrayList<Track>>() {}.type)
         )
     }
 
-    fun provideTracksSearchHistoryInteractor(context: Context): TracksSearchHistoryInteractor {
-        return TracksSearchHistoryInteractorImpl(getTracksSearchHistoryRepository(context))
+    fun provideTracksSearchHistoryInteractor(): TracksSearchHistoryInteractor {
+        return TracksSearchHistoryInteractorImpl(getTracksSearchHistoryRepository())
     }
 
-    fun provideSettingsInteractor(context: Context): SettingsInteractor {
-        val sharedPreferences = context.getSharedPreferences(
+    fun provideSettingsInteractor(): SettingsInteractor {
+        val sharedPreferences = applicationContext.getSharedPreferences(
             SettingsRepositoryImpl.THEME_PREFERENCES, Context.MODE_PRIVATE)
         val repository: SettingsRepository = SettingsRepositoryImpl(sharedPreferences)
         return SettingsInteractorImpl(repository)
     }
 
-    fun provideShareFunctionsInteractor(context: Context): ShareFunctionsInteractor {
-        return ShareFunctionsInteractorImpl(ShareRepositoryImpl(context))
+    fun provideShareFunctionsInteractor(): ShareFunctionsInteractor {
+        return ShareFunctionsInteractorImpl(ShareRepositoryImpl(applicationContext))
+    }
+
+    fun providePlayerInteractor(): PlayerInteractor {
+        return PlayerInteractorImpl(providePlayerRepository())
+    }
+
+    fun providePlayerRepository(): PlayerRepository {
+        return PlayerRepositoryImpl()
     }
 }

@@ -5,15 +5,14 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.text.Editable
-import android.text.TextWatcher
+import androidx.core.widget.addTextChangedListener
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.practicum.playlistmaker.search.domain.model.Track
 import com.practicum.playlistmaker.creator.Creator
 import com.practicum.playlistmaker.databinding.ActivitySearchBinding
 import com.practicum.playlistmaker.player.presentation.ui.PlayerActivity
@@ -25,9 +24,6 @@ class SearchActivity : AppCompatActivity() {
     private var isClickAllowed = true
     private val handler = Handler(Looper.getMainLooper())
     private val searchRunnable = Runnable { searchTrack() }
-
-    //список треков для RecycleViewAdapter
-    var tracks = ArrayList<Track>()
 
     private lateinit var viewModel: SearchViewModel
     private lateinit var searchAdapter: SearchRecycleViewAdapter
@@ -53,44 +49,44 @@ class SearchActivity : AppCompatActivity() {
         when (state.screenStatus) {
             is SearchScreenState.ScreenStatus.Default -> {
                 binding.apply {
-                    progressBar.visibility = View.GONE
-                    searchRecycleView.visibility = View.GONE
-                    notFoundErrorMessage.visibility = View.GONE
-                    connectionErrorMessage.visibility = View.GONE
+                    progressBar.isVisible = false
+                    searchRecycleView.isVisible = false
+                    notFoundErrorMessage.isVisible = false
+                    connectionErrorMessage.isVisible = false
                 }
             }
             is SearchScreenState.ScreenStatus.Loading -> {
                 binding.apply {
-                    progressBar.visibility = View.VISIBLE
-                    searchRecycleView.visibility = View.GONE
-                    notFoundErrorMessage.visibility = View.GONE
-                    connectionErrorMessage.visibility = View.GONE
+                    progressBar.isVisible = true
+                    searchRecycleView.isVisible = false
+                    notFoundErrorMessage.isVisible = false
+                    connectionErrorMessage.isVisible = false
                 }
             }
             is SearchScreenState.ScreenStatus.LoadSuccess -> {
                 binding.apply {
-                    progressBar.visibility = View.GONE
-                    searchRecycleView.visibility = View.VISIBLE
-                    notFoundErrorMessage.visibility = View.GONE
-                    connectionErrorMessage.visibility = View.GONE
+                    progressBar.isVisible = false
+                    searchRecycleView.isVisible = true
+                    notFoundErrorMessage.isVisible = false
+                    connectionErrorMessage.isVisible = false
                 }
                 searchAdapter.tracks = ArrayList(state.tracks)
                 searchAdapter.notifyDataSetChanged()
             }
             is SearchScreenState.ScreenStatus.NotFoundError -> {
                 binding.apply {
-                    progressBar.visibility = View.GONE
-                    searchRecycleView.visibility = View.GONE
-                    notFoundErrorMessage.visibility = View.VISIBLE
-                    connectionErrorMessage.visibility = View.GONE
+                    progressBar.isVisible = false
+                    searchRecycleView.isVisible = false
+                    notFoundErrorMessage.isVisible = true
+                    connectionErrorMessage.isVisible = false
                 }
             }
             is SearchScreenState.ScreenStatus.ConnectionError -> {
                 binding.apply {
-                    progressBar.visibility = View.GONE
-                    searchRecycleView.visibility = View.GONE
-                    notFoundErrorMessage.visibility = View.GONE
-                    connectionErrorMessage.visibility = View.VISIBLE
+                    progressBar.isVisible = false
+                    searchRecycleView.isVisible = false
+                    notFoundErrorMessage.isVisible = false
+                    connectionErrorMessage.isVisible = true
                 }
             }
         }
@@ -105,7 +101,7 @@ class SearchActivity : AppCompatActivity() {
 
     private fun setupViewModel() {
         val tracksSearchHistoryInteractor: TracksSearchHistoryInteractor by lazy {
-            Creator.provideTracksSearchHistoryInteractor(this)
+            Creator.provideTracksSearchHistoryInteractor()
         }
         viewModel = ViewModelProvider(
             this,
@@ -143,6 +139,7 @@ class SearchActivity : AppCompatActivity() {
         //обработка нажатия на кнопку очистки истории поиска
         binding.clearSearchHistoryButton.setOnClickListener {
             viewModel.clearSearchHistory()
+            updateSearchHistory()
         }
 
         //обработка изменения состояния фокуса поля ввода текста
@@ -153,7 +150,7 @@ class SearchActivity : AppCompatActivity() {
 
     private fun setupRecyclerViews() {
         //настройка адаптера и layoutManager для результатов поиска
-        searchAdapter = SearchRecycleViewAdapter(tracks) { track ->
+        searchAdapter = SearchRecycleViewAdapter(viewModel.screenState.value?.tracks ?: emptyList()) { track ->
             viewModel.saveTrackToHistory(track)
             updateSearchHistory()
             if (clickDebounce()) {
@@ -176,31 +173,20 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun setupTextWatcher() {
-        //настройка TextWatcher
-        val searchTextWatcher = object : TextWatcher {
-            override fun beforeTextChanged(
-                s: CharSequence?,
-                start: Int,
-                count: Int,
-                after: Int,
-            ) {}
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                binding.clearSearchTextButton.visibility = if (!s.isNullOrEmpty()) View.VISIBLE else View.GONE
+        //установка TextWatcher на EditText
+        binding.searchEditText.addTextChangedListener(
+            onTextChanged = { s, _, _, _ ->
+                binding.clearSearchTextButton.isVisible = !s.isNullOrEmpty()
                 searchDebounce()
-            }
-
-            override fun afterTextChanged(s: Editable?) {
+            },
+            afterTextChanged = { s ->
                 val text = s?.toString() ?: ""
                 viewModel.updateSearchText(text)
                 if (text.isEmpty()) {
                     viewModel.clearSearchQuery()
                 }
             }
-        }
-
-        //установка TextWatcher на EditText
-        binding.searchEditText.addTextChangedListener(searchTextWatcher)
+        )
     }
 
     private fun updateSearchHistory() {
@@ -210,10 +196,10 @@ class SearchActivity : AppCompatActivity() {
 
     private fun updateSearchHistoryVisibility(isVisible: Boolean) {
         if (isVisible && viewModel.isHistoryNotEmpty()) {
-            binding.historyView.visibility = View.VISIBLE
+            binding.historyView.isVisible = true
             updateSearchHistory()
         } else {
-            binding.historyView.visibility = View.GONE
+            binding.historyView.isVisible = false
         }
     }
 

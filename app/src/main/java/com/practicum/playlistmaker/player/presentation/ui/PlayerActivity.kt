@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.IntentCompat
+import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
@@ -14,7 +15,7 @@ import com.practicum.playlistmaker.search.presentation.ui.SearchActivity
 import com.practicum.playlistmaker.search.domain.model.Track
 import com.practicum.playlistmaker.core.presentation.utils.dpToPx
 import com.practicum.playlistmaker.core.presentation.utils.trackTimeConvert
-import com.practicum.playlistmaker.player.presentation.viewmodel.PlayerState
+import com.practicum.playlistmaker.player.domain.model.PlayerState
 import com.practicum.playlistmaker.player.presentation.viewmodel.PlayerViewModel
 
 class PlayerActivity : AppCompatActivity() {
@@ -46,7 +47,9 @@ class PlayerActivity : AppCompatActivity() {
     //"очистка" плеера при уничтожении активити
     override fun onDestroy() {
         super.onDestroy()
-        viewModel.onCleared()
+        if (isFinishing) {
+            viewModel.onCleared()
+        }
     }
 
     private fun setupViewModel() {
@@ -68,39 +71,36 @@ class PlayerActivity : AppCompatActivity() {
 
     private fun observeViewModel() {
         viewModel.playerState.observe(this, Observer { state ->
-            when (state) {
-                is PlayerState.Default -> {
+            binding.trackTimer.text = trackTimeConvert(state.currentPosition.toLong())
+            when (state.playerStatus) {
+                is PlayerState.PlayerStatus.Default -> {
                     binding.apply {
                         playButton.isEnabled = false
-                        playButton.visibility = View.VISIBLE
+                        playButton.isVisible = true
                         pauseButton.visibility = View.INVISIBLE
                     }
                 }
-                is PlayerState.Prepared -> {
+                is PlayerState.PlayerStatus.Prepared -> {
                     binding.apply {
                         playButton.isEnabled = true
-                        playButton.visibility = View.VISIBLE
+                        playButton.isVisible = true
                         pauseButton.visibility = View.INVISIBLE
                     }
                 }
-                is PlayerState.Playing -> {
+                is PlayerState.PlayerStatus.Playing -> {
                     binding.apply {
                         playButton.visibility = View.INVISIBLE
-                        pauseButton.visibility = View.VISIBLE
+                        pauseButton.isVisible = true
                     }
                 }
-                is PlayerState.Paused -> {
+                is PlayerState.PlayerStatus.Paused -> {
                     binding.apply {
-                        playButton.visibility = View.VISIBLE
+                        playButton.isVisible = true
                         pauseButton.visibility = View.INVISIBLE
                     }
                 }
 
             }
-        })
-
-        viewModel.currentPosition.observe(this, Observer {currentTime ->
-            binding.trackTimer.text = trackTimeConvert(currentTime.toLong())
         })
     }
 
