@@ -40,12 +40,12 @@ data class SearchScreenState(
         }
 
         private var currentSearchText = ""
+        private var hasFocus = false
 
         fun searchTrack(query: String) {
             currentSearchText = query
             if (query.isBlank()) {
-                _screenState.postValue(
-                    SearchScreenState(
+                _screenState.postValue(SearchScreenState(
                     searchQuery = query,
                     screenStatus = SearchScreenState.ScreenStatus.Default
                 ))
@@ -92,6 +92,7 @@ data class SearchScreenState(
 
         fun updateSearchText(text: String) {
             currentSearchText = text
+            searchHistoryVisibilityControl()
         }
 
         fun saveTrackToHistory(track: Track) {
@@ -130,6 +131,7 @@ data class SearchScreenState(
                 val statusName = bundle.getString(KEY_SCREEN_STATUS, "Default")
                 @Suppress("DEPRECATION")
                 val tracks = bundle.getParcelableArrayList<Track>(KEY_TRACKS) ?: emptyList()
+                val isSearchHistoryVisible = bundle.getBoolean(KEY_SEARCH_HISTORY_VISIBLE, false)
 
                 // Восстанавливаем правильное состояние экрана
                 val screenStatus = when (statusName) {
@@ -143,9 +145,35 @@ data class SearchScreenState(
                 _screenState.postValue(SearchScreenState(
                     tracks = tracks,
                     searchQuery = searchQuery,
-                    screenStatus = screenStatus
+                    screenStatus = screenStatus,
+                    isSearchHistoryVisible = isSearchHistoryVisible
                 ))
             }
+        }
+
+        private fun showSearchHistory() {
+            _screenState.postValue(SearchScreenState(
+                isSearchHistoryVisible = true
+            ))
+        }
+
+        private fun hideSearchHistory() {
+            _screenState.postValue(SearchScreenState(
+                isSearchHistoryVisible = false
+            ))
+        }
+
+        private fun searchHistoryVisibilityControl() {
+            if (hasFocus && currentSearchText.isEmpty() && isHistoryNotEmpty()) {
+                showSearchHistory()
+            } else {
+                hideSearchHistory()
+            }
+        }
+
+        fun editTextFocusChange(hasFocus: Boolean) {
+            this.hasFocus = hasFocus
+            searchHistoryVisibilityControl()
         }
 
         companion object {

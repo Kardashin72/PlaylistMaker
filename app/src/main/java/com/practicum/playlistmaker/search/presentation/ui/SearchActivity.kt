@@ -94,6 +94,7 @@ class SearchActivity : AppCompatActivity() {
                 }
             }
         }
+        updateSearchHistoryVisibility(state.isSearchHistoryVisible)
     }
 
     private fun observeViewModel() {
@@ -146,13 +147,7 @@ class SearchActivity : AppCompatActivity() {
 
         //обработка изменения состояния фокуса поля ввода текста
         binding.searchEditText.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus && binding.searchEditText.text.isEmpty()
-                && viewModel.isHistoryNotEmpty()) {
-
-                binding.historyView.visibility = View.VISIBLE
-            } else {
-                binding.historyView.visibility = View.GONE
-            }
+            viewModel.editTextFocusChange(hasFocus)
         }
     }
 
@@ -188,18 +183,10 @@ class SearchActivity : AppCompatActivity() {
                 start: Int,
                 count: Int,
                 after: Int,
-            ) {
-                binding.historyView.visibility =
-                    if (binding.searchEditText.hasFocus()) View.VISIBLE else View.GONE
-            }
+            ) {}
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 binding.clearSearchTextButton.visibility = if (!s.isNullOrEmpty()) View.VISIBLE else View.GONE
-                if (binding.searchEditText.hasFocus() && s?.isEmpty() == true && viewModel.isHistoryNotEmpty()) {
-                    binding.historyView.visibility = View.VISIBLE
-                } else {
-                    binding.historyView.visibility = View.GONE
-                }
                 searchDebounce()
             }
 
@@ -219,6 +206,15 @@ class SearchActivity : AppCompatActivity() {
     private fun updateSearchHistory() {
         searchHistoryAdapter.tracks = viewModel.getSearchHistory()
         searchHistoryAdapter.notifyDataSetChanged()
+    }
+
+    private fun updateSearchHistoryVisibility(isVisible: Boolean) {
+        if (isVisible && viewModel.isHistoryNotEmpty()) {
+            binding.historyView.visibility = View.VISIBLE
+            updateSearchHistory()
+        } else {
+            binding.historyView.visibility = View.GONE
+        }
     }
 
     //сохранение текста из строки ввода

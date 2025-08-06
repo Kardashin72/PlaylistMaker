@@ -19,6 +19,9 @@ import com.practicum.playlistmaker.search.domain.impl.TracksSearchInteractorImpl
 import com.practicum.playlistmaker.search.data.network.ItunesApiService
 import com.practicum.playlistmaker.search.data.storage.PrefsStorageClient
 import com.practicum.playlistmaker.search.domain.model.Track
+import com.practicum.playlistmaker.share.data.ShareRepositoryImpl
+import com.practicum.playlistmaker.share.domain.api.ShareFunctionsInteractor
+import com.practicum.playlistmaker.share.domain.impl.ShareFunctionsInteractorImpl
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -59,5 +62,9 @@ object Creator {
             SettingsRepositoryImpl.THEME_PREFERENCES, Context.MODE_PRIVATE)
         val repository: SettingsRepository = SettingsRepositoryImpl(sharedPreferences)
         return SettingsInteractorImpl(repository)
+    }
+
+    fun provideShareFunctionsInteractor(context: Context): ShareFunctionsInteractor {
+        return ShareFunctionsInteractorImpl(ShareRepositoryImpl(context))
     }
 }

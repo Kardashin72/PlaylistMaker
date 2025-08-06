@@ -28,43 +28,45 @@ class PlayerActivity : AppCompatActivity() {
         binding = ActivityAudioPlayerBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        //получение объекта трека через Intent
-        val track = IntentCompat.getParcelableExtra(intent,
-            SearchActivity.INTENT_TRACK_KEY, Track::class.java)
+        val track = getTrackFromIntent()
         previewUrl = track?.previewUrl.toString()
 
-        val factory = PlayerViewModel.getFactory(previewUrl)
-        viewModel = ViewModelProvider(this, factory).get(PlayerViewModel::class.java)
+        setupViewModel()
+        setupClickListeners()
+        bindTrackData(track)
+        observeViewModel()
+    }
 
-        //загрузка обложки трека в view
-        val artworkUrl = track?.artworkUrl100
-        Glide.with(binding.playerTrackArtwork)
-            .load(artworkUrl?.replaceAfterLast('/',"512x512bb.jpg"))
-            .placeholder(R.drawable.placeholder)
-            .transform(RoundedCorners(binding.playerTrackArtwork.context.dpToPx(8)))
-            .into(binding.playerTrackArtwork)
+    //пауза плеера при приостановке активити
+    override fun onPause() {
+        super.onPause()
+        viewModel.pausePlayer()
+    }
 
-        //передача данных трека в view
-        binding.apply {
-            playerTrackName.text = track?.trackName
-            playerArtistName.text = track?.artistName
-            trackTimer.text = trackTimeConvert(0)
-            trackTime.text = track?.trackTime
-            collectionName.text = track?.collectionName
-            val index = track?.releaseDate?.indexOf('-')
-            releaseDate.text = index?.let { track?.releaseDate?.substring(0, it) }
-            primaryGenreName.text = track?.primaryGenreName
-            country.text = track?.country
-        }
+    //"очистка" плеера при уничтожении активити
+    override fun onDestroy() {
+        super.onDestroy()
+        viewModel.onCleared()
+    }
 
+    private fun setupViewModel() {
+        viewModel = ViewModelProvider(
+            this,
+            PlayerViewModel.getFactory(previewUrl)
+        )[PlayerViewModel::class.java]
+    }
+
+    private fun setupClickListeners() {
         //обработка нажатия на кнопку "назад"
         binding.audioPlayerTopbar.setNavigationOnClickListener {
             finish()
         }
-        //подготовка плеера, обработка нажатия на кнопку плей/пауза
-
+        //обработка нажатия на кнопку плей/пауза
         binding.playButton.setOnClickListener { viewModel.startPlayer() }
         binding.pauseButton.setOnClickListener { viewModel.pausePlayer() }
+    }
+
+    private fun observeViewModel() {
         viewModel.playerState.observe(this, Observer { state ->
             when (state) {
                 is PlayerState.Default -> {
@@ -102,15 +104,34 @@ class PlayerActivity : AppCompatActivity() {
         })
     }
 
-    //пауза плеера при приостановке активити
-    override fun onPause() {
-        super.onPause()
-        viewModel.pausePlayer()
+    private fun getTrackFromIntent(): Track? {
+        return IntentCompat.getParcelableExtra(
+            intent,
+            SearchActivity.INTENT_TRACK_KEY,
+            Track::class.java
+        )
     }
 
-    //"очистка" плеера при уничтожении активити
-    override fun onDestroy() {
-        super.onDestroy()
-        viewModel.onCleared()
+    private fun bindTrackData(track: Track?) {
+        //загрузка обложки трека в view
+        val artworkUrl = track?.artworkUrl100
+        Glide.with(binding.playerTrackArtwork)
+            .load(artworkUrl?.replaceAfterLast('/',"512x512bb.jpg"))
+            .placeholder(R.drawable.placeholder)
+            .transform(RoundedCorners(binding.playerTrackArtwork.context.dpToPx(8)))
+            .into(binding.playerTrackArtwork)
+
+        //передача данных трека в view
+        binding.apply {
+            playerTrackName.text = track?.trackName
+            playerArtistName.text = track?.artistName
+            trackTimer.text = trackTimeConvert(0)
+            trackTime.text = track?.trackTime
+            collectionName.text = track?.collectionName
+            val index = track?.releaseDate?.indexOf('-')
+            releaseDate.text = index?.let { track?.releaseDate?.substring(0, it) }
+            primaryGenreName.text = track?.primaryGenreName
+            country.text = track?.country
+        }
     }
 }
