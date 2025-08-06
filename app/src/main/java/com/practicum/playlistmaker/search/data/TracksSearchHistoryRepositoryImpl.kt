@@ -1,10 +1,5 @@
 package com.practicum.playlistmaker.search.data
 
-import android.content.SharedPreferences
-import com.bumptech.glide.load.engine.Resource
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import com.practicum.playlistmaker.search.data.dto.TrackDto
 import com.practicum.playlistmaker.search.domain.api.TracksSearchHistoryRepository
 import com.practicum.playlistmaker.search.domain.model.Track
 
