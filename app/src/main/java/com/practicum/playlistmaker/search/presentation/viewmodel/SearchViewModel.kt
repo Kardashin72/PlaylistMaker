@@ -105,6 +105,9 @@ data class SearchScreenState(
 
         fun clearSearchHistory() {
             searchHistoryInteractor.clearSearchHistory()
+            _screenState.postValue(_screenState.value?.copy(
+                isSearchHistoryVisible = false
+            ))
         }
 
         fun isHistoryNotEmpty(): Boolean {
