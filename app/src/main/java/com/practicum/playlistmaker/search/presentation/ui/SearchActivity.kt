@@ -11,21 +11,19 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.practicum.playlistmaker.creator.Creator
 import com.practicum.playlistmaker.databinding.ActivitySearchBinding
 import com.practicum.playlistmaker.player.presentation.ui.PlayerActivity
-import com.practicum.playlistmaker.search.domain.api.TracksSearchHistoryInteractor
 import com.practicum.playlistmaker.search.presentation.viewmodel.SearchScreenState
 import com.practicum.playlistmaker.search.presentation.viewmodel.SearchViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchActivity : AppCompatActivity() {
     private var isClickAllowed = true
     private val handler = Handler(Looper.getMainLooper())
     private val searchRunnable = Runnable { searchTrack() }
+    private val viewModel: SearchViewModel by viewModel()
 
-    private lateinit var viewModel: SearchViewModel
     private lateinit var searchAdapter: SearchRecycleViewAdapter
     private lateinit var searchHistoryAdapter: SearchRecycleViewAdapter
     private lateinit var binding: ActivitySearchBinding
@@ -38,7 +36,6 @@ class SearchActivity : AppCompatActivity() {
         binding = ActivitySearchBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setupViewModel()
         setupClickListeners()
         setupRecyclerViews()
         setupTextWatcher()
@@ -97,16 +94,6 @@ class SearchActivity : AppCompatActivity() {
         viewModel.screenState.observe(this) { state ->
             updateUI(state)
         }
-    }
-
-    private fun setupViewModel() {
-        val tracksSearchHistoryInteractor: TracksSearchHistoryInteractor by lazy {
-            Creator.provideTracksSearchHistoryInteractor()
-        }
-        viewModel = ViewModelProvider(
-            this,
-            SearchViewModel.getFactory(tracksSearchHistoryInteractor)
-        ) [SearchViewModel :: class.java]
     }
 
     private fun setupClickListeners() {

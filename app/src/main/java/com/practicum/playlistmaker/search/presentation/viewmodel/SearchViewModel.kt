@@ -4,10 +4,6 @@ import android.os.Bundle
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
-import com.practicum.playlistmaker.creator.Creator
 import com.practicum.playlistmaker.search.domain.api.SearchResult
 import com.practicum.playlistmaker.search.domain.api.TracksSearchHistoryInteractor
 import com.practicum.playlistmaker.search.domain.api.TracksSearchInteractor
@@ -30,14 +26,11 @@ data class SearchScreenState(
 
     class SearchViewModel(
         val searchHistoryInteractor: TracksSearchHistoryInteractor,
+        private val searchInteractor: TracksSearchInteractor,
     ) : ViewModel() {
         //LiveData для сохранения состояния экрана
         private val _screenState = MutableLiveData<SearchScreenState>(SearchScreenState())
         val screenState: LiveData<SearchScreenState> = _screenState
-
-        private val searchIneractor: TracksSearchInteractor by lazy {
-            Creator.provideTracksSearchInteractor()
-        }
 
         private var currentSearchText = ""
         private var hasFocus = false
@@ -55,7 +48,7 @@ data class SearchScreenState(
                 searchQuery = query,
                 screenStatus = SearchScreenState.ScreenStatus.Loading
             ))
-            searchIneractor.searchTracks(query, object : TracksSearchInteractor.TracksConsumer {
+            searchInteractor.searchTracks(query, object : TracksSearchInteractor.TracksConsumer {
                 override fun consume(result: SearchResult) {
                     when (result) {
                         is SearchResult.Success -> {
@@ -138,6 +131,7 @@ data class SearchScreenState(
 
                 // Восстанавливаем правильное состояние экрана
                 val screenStatus = when (statusName) {
+                    STATUS_DEFAULT -> SearchScreenState.ScreenStatus.Default
                     STATUS_LOAD_SUCCESS -> SearchScreenState.ScreenStatus.LoadSuccess
                     STATUS_LOADING -> SearchScreenState.ScreenStatus.Loading
                     STATUS_NOT_FOUND_ERROR -> SearchScreenState.ScreenStatus.NotFoundError
@@ -192,12 +186,5 @@ data class SearchScreenState(
             private const val STATUS_NOT_FOUND_ERROR = "NotFoundError"
             private const val STATUS_CONNECTION_ERROR = "ConnectionError"
             private const val STATUS_DEFAULT = "Default"
-
-            fun getFactory(searchHistoryInteractor: TracksSearchHistoryInteractor): ViewModelProvider.Factory =
-                viewModelFactory {
-                    initializer {
-                        SearchViewModel(searchHistoryInteractor)
-                    }
-                }
         }
     }

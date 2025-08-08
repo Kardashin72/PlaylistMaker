@@ -6,7 +6,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.IntentCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.practicum.playlistmaker.R
@@ -17,12 +16,13 @@ import com.practicum.playlistmaker.core.presentation.utils.dpToPx
 import com.practicum.playlistmaker.core.presentation.utils.trackTimeConvert
 import com.practicum.playlistmaker.player.domain.model.PlayerState
 import com.practicum.playlistmaker.player.presentation.viewmodel.PlayerViewModel
+import org.koin.androidx.viewmodel.ext.android.getViewModel
+import org.koin.core.parameter.parametersOf
 
 class PlayerActivity : AppCompatActivity() {
-
+    private lateinit var viewModel: PlayerViewModel
     private lateinit var previewUrl: String
     private lateinit var binding: ActivityAudioPlayerBinding
-    private lateinit var viewModel: PlayerViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,7 +32,8 @@ class PlayerActivity : AppCompatActivity() {
         val track = getTrackFromIntent()
         previewUrl = track?.previewUrl.toString()
 
-        setupViewModel()
+        viewModel = getViewModel(parameters = { parametersOf(previewUrl) })
+
         setupClickListeners()
         bindTrackData(track)
         observeViewModel()
@@ -50,13 +51,6 @@ class PlayerActivity : AppCompatActivity() {
         if (isFinishing) {
             viewModel.onCleared()
         }
-    }
-
-    private fun setupViewModel() {
-        viewModel = ViewModelProvider(
-            this,
-            PlayerViewModel.getFactory(previewUrl)
-        )[PlayerViewModel::class.java]
     }
 
     private fun setupClickListeners() {
