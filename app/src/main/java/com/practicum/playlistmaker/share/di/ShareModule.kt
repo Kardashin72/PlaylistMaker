@@ -8,6 +8,6 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
 val shareModule = module {
-    single<ShareRepository> { ShareRepositoryImpl(androidContext()) }
-    single<ShareFunctionsInteractor> { ShareFunctionsInteractorImpl(get()) }
+    factory<ShareRepository> { ShareRepositoryImpl(androidContext()) }
+    factory<ShareFunctionsInteractor> { ShareFunctionsInteractorImpl(get()) }
 }

@@ -7,6 +7,6 @@ import com.practicum.playlistmaker.search.domain.impl.TracksSearchInteractorImpl
 import org.koin.dsl.module
 
 val searchDomainModule = module {
-    single<TracksSearchInteractor> { TracksSearchInteractorImpl(get()) }
-    single<TracksSearchHistoryInteractor> { TracksSearchHistoryInteractorImpl(get()) }
+    factory<TracksSearchInteractor> { TracksSearchInteractorImpl(get()) }
+    factory<TracksSearchHistoryInteractor> { TracksSearchHistoryInteractorImpl(get()) }
 }

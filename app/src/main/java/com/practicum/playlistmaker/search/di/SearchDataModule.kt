@@ -42,7 +42,7 @@ val searchDataModule = module {
         )
     }
 
-    single<TracksSearchRepository> { TracksSearchRepositoryImpl(get()) }
+    factory<TracksSearchRepository> { TracksSearchRepositoryImpl(get()) }
 
-    single<TracksSearchHistoryRepository> { TracksSearchHistoryRepositoryImpl(get()) }
+    factory<TracksSearchHistoryRepository> { TracksSearchHistoryRepositoryImpl(get()) }
 }

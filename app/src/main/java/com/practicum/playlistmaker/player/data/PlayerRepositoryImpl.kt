@@ -7,16 +7,17 @@ import com.practicum.playlistmaker.player.domain.api.PlayerRepository
 import com.practicum.playlistmaker.player.domain.model.PlayerState
 
 
-class PlayerRepositoryImpl : PlayerRepository {
-    private var mediaPlayer: MediaPlayer? = null
+class PlayerRepositoryImpl(
+    private val mediaPLayer: MediaPlayer
+) : PlayerRepository {
     private val handler = Handler(Looper.getMainLooper())
     private var timerRunnable: Runnable? = null
     private var onStateChanged: ((PlayerState) -> Unit)? = null
 
     override fun preparePlayer(previewUrl: String, onStateChanged: (PlayerState) -> Unit) {
         this.onStateChanged = onStateChanged
-        mediaPlayer = MediaPlayer()
-        mediaPlayer?.apply {
+        mediaPLayer.apply {
+            reset()
             setDataSource(previewUrl)
             prepareAsync()
             setOnPreparedListener {
@@ -25,39 +26,38 @@ class PlayerRepositoryImpl : PlayerRepository {
             setOnCompletionListener {
                 onStateChanged(PlayerState(PlayerState.PlayerStatus.Prepared, 0))
                 timerRunnable?.let { handler.removeCallbacks(it) }
-                mediaPlayer?.seekTo(0)
+                mediaPLayer.seekTo(0)
             }
         }
 
     }
 
     override fun startPlayer() {
-        mediaPlayer?.start()
+        mediaPLayer.start()
         onStateChanged?.invoke(PlayerState(PlayerState.PlayerStatus.Playing, getCurrentPosition()))
         startTimer()
     }
 
     override fun pausePlayer() {
-        mediaPlayer?.pause()
+        mediaPLayer.pause()
         onStateChanged?.invoke(PlayerState(PlayerState.PlayerStatus.Paused, getCurrentPosition()))
         timerRunnable?.let { handler.removeCallbacks(it) }
     }
 
     override fun releasePlayer() {
         timerRunnable?.let { handler.removeCallbacks(it) }
-        mediaPlayer?.release()
-        mediaPlayer = null
+        mediaPLayer.release()
     }
 
     override fun getCurrentPosition(): Int {
-        return mediaPlayer?.currentPosition ?: 0
+        return mediaPLayer.currentPosition
     }
 
     private fun startTimer() {
         timerRunnable = object : Runnable {
             override fun run() {
                 val currentPosition = getCurrentPosition()
-                if (mediaPlayer?.isPlaying == true) {
+                if (mediaPLayer.isPlaying == true) {
                     onStateChanged?.invoke(PlayerState(PlayerState.PlayerStatus.Playing, currentPosition))
                     handler.postDelayed(this, UPDATE_INTERVAL_MS)
                 } else {

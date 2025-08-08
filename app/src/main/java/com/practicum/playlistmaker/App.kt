@@ -9,10 +9,13 @@ import com.practicum.playlistmaker.search.di.searchViewModelModule
 import com.practicum.playlistmaker.settings.di.settingsModule
 import com.practicum.playlistmaker.share.di.shareModule
 import com.practicum.playlistmaker.settings.domain.api.SettingsInteractor
+import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.GlobalContext.startKoin
 
 class App : Application() {
+
+    private val settingsInteractor: SettingsInteractor by inject()
 
     override fun onCreate() {
         super.onCreate()
@@ -27,8 +30,6 @@ class App : Application() {
                 playerModule
             )
         }
-        val settingsInteractor: SettingsInteractor =
-            org.koin.java.KoinJavaComponent.get(SettingsInteractor::class.java)
         val isDarkMode = settingsInteractor.isDarkTheme()
         switchTheme(isDarkMode)
     }
