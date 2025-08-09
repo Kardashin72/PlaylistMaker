@@ -3,10 +3,6 @@ package com.practicum.playlistmaker.player.presentation.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
-import com.practicum.playlistmaker.creator.Creator
 import com.practicum.playlistmaker.player.domain.api.PlayerInteractor
 import com.practicum.playlistmaker.player.domain.model.PlayerState
 
@@ -42,11 +38,5 @@ class PlayerViewModel(
 
     companion object {
         private const val FRAGMENT_DURATION = 30_000
-
-        fun getFactory(previewUrl: String): ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                PlayerViewModel(previewUrl, Creator.providePlayerInteractor())
-            }
-        }
     }
 }

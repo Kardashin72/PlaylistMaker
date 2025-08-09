@@ -3,9 +3,6 @@ package com.practicum.playlistmaker.settings.presentation.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
 import com.practicum.playlistmaker.core.presentation.utils.SingleLiveEvent
 import com.practicum.playlistmaker.settings.domain.api.SettingsInteractor
 import com.practicum.playlistmaker.share.domain.api.ShareFunctionsInteractor
@@ -58,14 +55,4 @@ class SettingsViewModel(
     fun openUserAgreement() {
         _action.value = SettingsAction.OpenUserAgreement(shareFunctionsInteractor.getUserAgreementData())
     }
-
-    companion object {
-        fun getFactory(
-            settingsInteractor: SettingsInteractor,
-            shareFunctionsInteractor: ShareFunctionsInteractor
-        ): ViewModelProvider.Factory = viewModelFactory {
-            initializer { SettingsViewModel(settingsInteractor, shareFunctionsInteractor) }
-        }
-    }
-
 }

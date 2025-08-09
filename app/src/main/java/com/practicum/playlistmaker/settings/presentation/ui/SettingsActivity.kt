@@ -5,44 +5,27 @@ import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
-import com.practicum.playlistmaker.creator.Creator
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.App
 import com.practicum.playlistmaker.databinding.ActivitySettingsBinding
-import com.practicum.playlistmaker.settings.domain.api.SettingsInteractor
 import com.practicum.playlistmaker.settings.presentation.viewmodel.SettingsAction
 import com.practicum.playlistmaker.settings.presentation.viewmodel.SettingsViewModel
-import com.practicum.playlistmaker.share.domain.api.ShareFunctionsInteractor
 import com.practicum.playlistmaker.share.domain.model.ContactSupportData
 import com.practicum.playlistmaker.share.domain.model.ShareAppData
 import com.practicum.playlistmaker.share.domain.model.UserAgreementData
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SettingsActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySettingsBinding
-    private lateinit var viewModel: SettingsViewModel
+    private val viewModel: SettingsViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setupViewModel()
         setupClickListeners()
         observeViewModel()
-    }
-
-    private fun setupViewModel() {
-        val settingsInteractor: SettingsInteractor by lazy {
-            Creator.provideSettingsInteractor()
-        }
-        val shareFunctionsInteractor: ShareFunctionsInteractor by lazy {
-            Creator.provideShareFunctionsInteractor()
-        }
-        viewModel = ViewModelProvider(
-            this,
-            SettingsViewModel.getFactory(settingsInteractor, shareFunctionsInteractor)
-        ) [SettingsViewModel::class.java]
     }
 
     private fun setupClickListeners() {
