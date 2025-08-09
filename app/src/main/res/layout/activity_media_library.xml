@@ -14,14 +14,17 @@
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:liftOnScroll="false"
+        android:stateListAnimator="@null">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbarMediaLibrary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="?attr/colorPrimary"
             app:title="@string/text_media_library"
-            app:titleTextAppearance="@style/TextAppearance.MediaLibraryToolBar"
+            app:titleTextAppearance="@style/TextAppearanceAppbar"
             app:navigationIcon="@drawable/arrow_back"
             app:navigationIconTint="?attr/colorOnPrimary"
             />
@@ -30,7 +33,15 @@
             android:id="@+id/tabLayoutMediaLibrary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-
+            android:background="?attr/colorPrimary"
+            app:tabTextAppearance="@style/TextAppearanceTabLayout"
+            app:tabSelectedTextAppearance="@style/TextAppearanceTabLayout"
+            app:tabTextColor="?attr/colorOnPrimary"
+            app:tabSelectedTextColor="?attr/colorOnPrimary"
+            app:tabIndicator="@drawable/tab_indicator_draw"
+            app:tabIndicatorColor="?attr/colorOnPrimary"
+            android:stateListAnimator="@null"
+            android:elevation="0dp"
             />
 
     </com.google.android.material.appbar.AppBarLayout>

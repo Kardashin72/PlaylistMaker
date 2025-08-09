@@ -1,9 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/playlists_fragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?attr/colorPrimary">
 
-    >
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="24dp"
+        android:text="@string/new_playlist"
+        android:backgroundTint="?attr/colorOnPrimary"
+        android:textColor="?attr/colorPrimary"
+        app:cornerRadius="54dp"
+        android:fontFamily="@font/ys_display_medium"
+        android:textAllCaps="false"
+        android:textSize="14sp"
+        android:textFontWeight="500">
+    </Button>
+
+    <LinearLayout
+        android:id="@+id/playlistsPlaceholder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="106dp"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/not_found_image" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:fontFamily="@font/ys_display_medium"
+            android:text="@string/playlists_placeholder_text"
+            android:gravity="center"
+            android:textColor="?attr/colorOnPrimary"
+            android:textFontWeight="400"
+            android:textSize="@dimen/search_messages_text_size"></TextView>
+    </LinearLayout>
 </FrameLayout>
 

@@ -3,8 +3,31 @@
     android:id="@+id/medialibrary_fragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?attr/colorPrimary">
 
+    <LinearLayout
+        android:id="@+id/favoriteTracksPlaceholder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="106dp"
+        android:orientation="vertical">
 
-    >
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/not_found_image" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:fontFamily="@font/ys_display_medium"
+            android:text="@string/favourite_tracks_placeholder_text"
+            android:textColor="?attr/colorOnPrimary"
+            android:textFontWeight="400"
+            android:textSize="@dimen/search_messages_text_size"></TextView>
+    </LinearLayout>
 </FrameLayout>
 

@@ -7,25 +7,31 @@ import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.ActivityMediaLibraryBinding
 
 class MediaLibraryActivity : AppCompatActivity() {
-    private var _binding: ActivityMediaLibraryBinding? = null
-    private val binding get() = _binding!!
+    private lateinit var binding: ActivityMediaLibraryBinding
+    private lateinit var tabMediator: TabLayoutMediator
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        _binding = ActivityMediaLibraryBinding.inflate(layoutInflater)
+        binding = ActivityMediaLibraryBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         binding.toolbarMediaLibrary.setNavigationOnClickListener { finish() }
 
-        binding.viewPagerMediaLibrary.adapter = MediaLibraryPagerAdapter(this)
+        binding.viewPagerMediaLibrary.adapter = MediaLibraryPagerAdapter(supportFragmentManager, lifecycle)
         binding.viewPagerMediaLibrary.offscreenPageLimit = 2
 
-        TabLayoutMediator(binding.tabLayoutMediaLibrary, binding.viewPagerMediaLibrary) { tab, position ->
+        tabMediator = TabLayoutMediator(binding.tabLayoutMediaLibrary, binding.viewPagerMediaLibrary) { tab, position ->
             tab.text = when(position) {
-                0 -> "Избранные треки"
-                1 -> "Плейлисты"
+                0 -> getString(R.string.favourite_tracks)
+                1 -> getString(R.string.playlists)
                 else -> ""
             }
-        }.attach()
+        }
+        tabMediator.attach()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        tabMediator.detach()
     }
 }
