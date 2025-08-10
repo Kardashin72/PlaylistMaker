@@ -2,6 +2,7 @@ package com.practicum.playlistmaker
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
+import com.practicum.playlistmaker.medialibrary.di.mediaLibraryModule
 import com.practicum.playlistmaker.player.di.playerModule
 import com.practicum.playlistmaker.search.di.searchDataModule
 import com.practicum.playlistmaker.search.di.searchDomainModule
@@ -27,7 +28,8 @@ class App : Application() {
                 searchViewModelModule,
                 settingsModule,
                 shareModule,
-                playerModule
+                playerModule,
+                mediaLibraryModule
             )
         }
         val isDarkMode = settingsInteractor.isDarkTheme()

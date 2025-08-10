@@ -30,7 +30,7 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun setupClickListeners() {
         //обработка нажатия на кнопку "назад"
-        binding.backButtonSettings.setOnClickListener {
+        binding.toolbarSettings.setNavigationOnClickListener {
             finish()
         }
 
