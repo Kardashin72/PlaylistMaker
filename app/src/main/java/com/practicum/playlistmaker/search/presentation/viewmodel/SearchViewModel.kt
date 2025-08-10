@@ -25,7 +25,7 @@ data class SearchScreenState(
 }
 
     class SearchViewModel(
-        val searchHistoryInteractor: TracksSearchHistoryInteractor,
+        private val searchHistoryInteractor: TracksSearchHistoryInteractor,
         private val searchInteractor: TracksSearchInteractor,
     ) : ViewModel() {
         //LiveData для сохранения состояния экрана

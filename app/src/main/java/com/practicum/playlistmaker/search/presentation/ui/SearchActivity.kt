@@ -112,7 +112,7 @@ class SearchActivity : AppCompatActivity() {
         }
 
         //обработка нажатия на кнопку "Назад"
-        binding.backButtonSearch.setOnClickListener {
+        binding.toolbarSearch.setNavigationOnClickListener {
             finish()
         }
 
