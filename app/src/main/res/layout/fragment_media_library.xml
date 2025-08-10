@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/colorPrimary"
-    tools:context=".medialibrary.presentation.ui.MediaLibraryActivity">
+    tools:context=".medialibrary.presentation.ui.MediaLibraryFragment">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayoutMediaLibrary"

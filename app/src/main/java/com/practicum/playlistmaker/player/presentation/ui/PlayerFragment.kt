@@ -1,45 +1,56 @@
 package com.practicum.playlistmaker.player.presentation.ui
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
+import android.view.ViewGroup
 import androidx.core.content.IntentCompat
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.databinding.ActivityAudioPlayerBinding
-import com.practicum.playlistmaker.search.presentation.ui.SearchActivity
-import com.practicum.playlistmaker.search.domain.model.Track
 import com.practicum.playlistmaker.core.presentation.utils.dpToPx
 import com.practicum.playlistmaker.core.presentation.utils.trackTimeConvert
+import com.practicum.playlistmaker.databinding.FragmentAudioPlayerBinding
 import com.practicum.playlistmaker.player.domain.model.PlayerState
 import com.practicum.playlistmaker.player.presentation.viewmodel.PlayerViewModel
+import com.practicum.playlistmaker.search.domain.model.Track
+import com.practicum.playlistmaker.search.presentation.ui.SearchActivity
+import com.practicum.playlistmaker.search.presentation.ui.SearchFragment.Companion.TRACK_KEY
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 import org.koin.core.parameter.parametersOf
 
-class PlayerActivity : AppCompatActivity() {
+class PlayerFragment: Fragment() {
+    private lateinit var binding: FragmentAudioPlayerBinding
     private lateinit var viewModel: PlayerViewModel
     private lateinit var previewUrl: String
-    private lateinit var binding: ActivityAudioPlayerBinding
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivityAudioPlayerBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        binding = FragmentAudioPlayerBinding.inflate(inflater, container, false)
+        return binding.root
 
         val track = getTrackFromIntent()
         previewUrl = track?.previewUrl.toString()
 
         viewModel = getViewModel(parameters = { parametersOf(previewUrl) })
 
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         setupClickListeners()
         bindTrackData(track)
         observeViewModel()
     }
 
-    //пауза плеера при приостановке активити
     override fun onPause() {
         super.onPause()
         viewModel.pausePlayer()
@@ -127,5 +138,10 @@ class PlayerActivity : AppCompatActivity() {
             primaryGenreName.text = track?.primaryGenreName
             country.text = track?.country
         }
+    }
+
+    companion object {
+        private const val TRACK_KEY = "TRACK"
+        fun createArgs(track: Track): Bundle = bundleOf(TRACK_KEY to track)
     }
 }

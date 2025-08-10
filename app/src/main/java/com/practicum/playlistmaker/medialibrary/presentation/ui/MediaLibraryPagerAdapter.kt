@@ -1,7 +1,6 @@
 package com.practicum.playlistmaker.medialibrary.presentation.ui
 
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
@@ -14,7 +13,7 @@ class MediaLibraryPagerAdapter(
     override fun getItemCount(): Int = 2
 
     override fun createFragment(position: Int): Fragment = when (position) {
-        0 -> MediaLibraryFragment.newInstance()
+        0 -> FavouriteTracksFragment.newInstance()
         1 -> PlaylistsFragment.newInstance()
         else -> throw IllegalArgumentException("Invalid position: $position")
     }
