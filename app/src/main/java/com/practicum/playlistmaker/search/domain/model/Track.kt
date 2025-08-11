@@ -1,7 +1,7 @@
 package com.practicum.playlistmaker.search.domain.model
 
 import android.os.Parcelable
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 @Parcelize
 //releaseDate и previewUrl сделал nullble, потому что при поисковом
@@ -13,10 +13,10 @@ data class Track (
     val trackTime: String,
     val artworkUrl100: String,
     val collectionName: String,
-    val releaseDate: String?,
+    val releaseDate: String,
     val primaryGenreName: String,
     val country: String,
-    val previewUrl: String?
+    val previewUrl: String
 ): Parcelable
 
 

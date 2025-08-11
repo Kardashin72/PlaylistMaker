@@ -31,8 +31,7 @@ class PlayerViewModel(
         return interactor.getCurrentPosition()
     }
 
-    public override fun onCleared() {
-        super.onCleared()
+    fun releasePlayer() {
         interactor.releasePlayer()
     }
 

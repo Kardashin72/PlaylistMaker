@@ -36,12 +36,12 @@ class SettingsViewModel(
 
     private fun loadSettings() {
         val isDarkTheme = settingsInteractor.isDarkTheme()
-        _screenState.postValue(SettingsScreenState(isDarkTheme = isDarkTheme))
+        _screenState.value = SettingsScreenState(isDarkTheme = isDarkTheme)
     }
 
     fun setDarkTheme(enabled: Boolean) {
         settingsInteractor.setDarkTheme(enabled)
-        _screenState.postValue(SettingsScreenState(isDarkTheme = enabled))
+        _screenState.value = SettingsScreenState(isDarkTheme = enabled)
     }
 
     fun shareApp() {
