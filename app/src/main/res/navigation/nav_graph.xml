@@ -3,22 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/mainFragment">
-    <fragment
-        android:id="@+id/mainFragment"
-        android:name="com.practicum.playlistmaker.main.ui.MainFragment"
-        android:label="fragment_main"
-        tools:layout="@layout/fragment_main" >
-        <action
-            android:id="@+id/action_mainFragment_to_searchFragment"
-            app:destination="@id/searchFragment" />
-        <action
-            android:id="@+id/action_mainFragment_to_settingsFragment"
-            app:destination="@id/settingsFragment" />
-        <action
-            android:id="@+id/action_mainFragment_to_mediaLibraryFragment"
-            app:destination="@id/mediaLibraryFragment" />
-    </fragment>
+    app:startDestination="@id/searchFragment">
     <fragment
         android:id="@+id/searchFragment"
         android:name="com.practicum.playlistmaker.search.presentation.ui.SearchFragment"
@@ -32,19 +17,16 @@
         android:id="@+id/playerFragment"
         android:name="com.practicum.playlistmaker.player.presentation.ui.PlayerFragment"
         android:label="fragment_audio_player"
-        tools:layout="@layout/fragment_audio_player" />
+        tools:layout="@layout/fragment_audio_player">
+        <argument
+            android:name="track"
+            app:argType="Track"/>
+    </fragment>
     <fragment
         android:id="@+id/mediaLibraryFragment"
         android:name="com.practicum.playlistmaker.medialibrary.presentation.ui.MediaLibraryFragment"
         android:label="fragment_media_library"
-        tools:layout="@layout/fragment_media_library" >
-        <action
-            android:id="@+id/action_mediaLibraryFragment_to_favouriteTracksFragment"
-            app:destination="@id/favouriteTracksFragment" />
-        <action
-            android:id="@+id/action_mediaLibraryFragment_to_playlistsFragment"
-            app:destination="@id/playlistsFragment" />
-    </fragment>
+        tools:layout="@layout/fragment_media_library" />
     <fragment
         android:id="@+id/settingsFragment"
         android:name="com.practicum.playlistmaker.settings.presentation.ui.SettingsFragment"

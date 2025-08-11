@@ -26,7 +26,8 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import kotlin.getValue
 
 class SearchFragment: Fragment() {
-    private lateinit var binding: FragmentSearchBinding
+    private var _binding: FragmentSearchBinding? = null
+    private val binding get() = _binding!!
     private lateinit var searchAdapter: SearchRecycleViewAdapter
     private lateinit var searchHistoryAdapter: SearchRecycleViewAdapter
     private var isClickAllowed = true
@@ -39,7 +40,7 @@ class SearchFragment: Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentSearchBinding.inflate(inflater, container, false)
+        _binding = FragmentSearchBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -49,6 +50,11 @@ class SearchFragment: Fragment() {
         setupRecyclerViews()
         setupTextWatcher()
         observeViewModel()
+    }
+
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
     }
 
     private fun updateUI(state: SearchScreenState) {
@@ -100,7 +106,7 @@ class SearchFragment: Fragment() {
     }
 
     private fun observeViewModel() {
-        viewModel.screenState.observe() { state ->
+        viewModel.screenState.observe(viewLifecycleOwner) { state ->
             updateUI(state)
         }
     }
@@ -157,7 +163,7 @@ class SearchFragment: Fragment() {
             }
         }
         binding.searchRecycleView.adapter = searchAdapter
-        binding.searchRecycleView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        binding.searchRecycleView.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
 
         //настройка адаптера и layoutManager для истории поиска
         searchHistoryAdapter = SearchRecycleViewAdapter(ArrayList()) { track ->
@@ -167,7 +173,7 @@ class SearchFragment: Fragment() {
             )
         }
         binding.searchHistoryRecyclerView.adapter = searchHistoryAdapter
-        binding.searchHistoryRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        binding.searchHistoryRecyclerView.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
     }
 
     private fun setupTextWatcher() {
