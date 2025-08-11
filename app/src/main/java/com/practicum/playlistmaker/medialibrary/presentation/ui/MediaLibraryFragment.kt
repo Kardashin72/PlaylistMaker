@@ -10,7 +10,8 @@ import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentMediaLibraryBinding
 
 class MediaLibraryFragment: Fragment() {
-    private lateinit var binding: FragmentMediaLibraryBinding
+    private var _binding: FragmentMediaLibraryBinding? = null
+    private val binding get() = _binding!!
     private lateinit var tabMediator: TabLayoutMediator
 
     override fun onCreateView(
@@ -18,12 +19,14 @@ class MediaLibraryFragment: Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentMediaLibraryBinding.inflate(inflater, container, false)
+        _binding = FragmentMediaLibraryBinding.inflate(inflater, container, false)
         return binding.root
+    }
 
-        binding.toolbarMediaLibrary.setNavigationOnClickListener { finish() }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        binding.viewPagerMediaLibrary.adapter = MediaLibraryPagerAdapter(supportFragmentManager, lifecycle)
+        binding.viewPagerMediaLibrary.adapter = MediaLibraryPagerAdapter(childFragmentManager, lifecycle)
         binding.viewPagerMediaLibrary.offscreenPageLimit = 2
 
         tabMediator = TabLayoutMediator(binding.tabLayoutMediaLibrary, binding.viewPagerMediaLibrary) { tab, position ->
@@ -36,8 +39,9 @@ class MediaLibraryFragment: Fragment() {
         tabMediator.attach()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
         tabMediator.detach()
+        _binding = null
+        super.onDestroyView()
     }
 }

@@ -19,8 +19,6 @@
             android:background="?attr/colorPrimary"
             app:title="@string/text_search"
             app:titleTextAppearance="@style/TextAppearanceAppbar"
-            app:navigationIcon="@drawable/arrow_back"
-            app:navigationIconTint="?attr/colorOnPrimary"
             />
 
         <FrameLayout

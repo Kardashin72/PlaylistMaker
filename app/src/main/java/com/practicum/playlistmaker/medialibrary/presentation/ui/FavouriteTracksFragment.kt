@@ -5,12 +5,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.practicum.playlistmaker.databinding.FragmentMedialibraryBinding
+import com.practicum.playlistmaker.databinding.FragmentFavouriteTracksBinding
 import com.practicum.playlistmaker.medialibrary.presentation.viewmodel.FavouriteTracksViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class FavouriteTracksFragment() : Fragment() {
-    private lateinit var binding: FragmentMedialibraryBinding
+    private var _binding: FragmentFavouriteTracksBinding? = null
+    private val binding get() = _binding!!
     private val viewModel: FavouriteTracksViewModel by viewModel()
 
     override fun onCreateView(
@@ -18,8 +19,13 @@ class FavouriteTracksFragment() : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentMedialibraryBinding.inflate(inflater, container, false)
+        _binding = FragmentFavouriteTracksBinding.inflate(inflater, container, false)
         return binding.root
+    }
+
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
     }
 
     companion object {

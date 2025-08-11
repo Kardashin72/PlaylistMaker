@@ -1,7 +1,6 @@
 package com.practicum.playlistmaker.search.presentation.ui
 
 import android.content.Context.INPUT_METHOD_SERVICE
-import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -10,20 +9,18 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentSearchBinding
-import com.practicum.playlistmaker.player.presentation.ui.PlayerFragment
 import com.practicum.playlistmaker.search.domain.model.Track
 import com.practicum.playlistmaker.search.presentation.viewmodel.SearchScreenState
 import com.practicum.playlistmaker.search.presentation.viewmodel.SearchViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import kotlin.getValue
+import java.util.ArrayList
+import java.util.Collections.emptyList
 
 class SearchFragment: Fragment() {
     private var _binding: FragmentSearchBinding? = null
@@ -126,11 +123,6 @@ class SearchFragment: Fragment() {
             searchTrack()
         }
 
-        //обработка нажатия на кнопку "Назад"
-        binding.toolbarSearch.setNavigationOnClickListener {
-            findNavController().navigateUp()
-        }
-
         //обработка нажатия на кнопку очистки строки ввода
         binding.clearSearchTextButton.setOnClickListener {
             binding.searchEditText.text.clear()
@@ -156,10 +148,7 @@ class SearchFragment: Fragment() {
             viewModel.saveTrackToHistory(track)
             updateSearchHistory()
             if (clickDebounce()) {
-                findNavController().navigate(
-                    R.id.action_searchFragment_to_playerFragment,
-                    PlayerFragment.createArgs(track)
-                )
+                showPlayerForTrack(track)
             }
         }
         binding.searchRecycleView.adapter = searchAdapter
@@ -167,10 +156,7 @@ class SearchFragment: Fragment() {
 
         //настройка адаптера и layoutManager для истории поиска
         searchHistoryAdapter = SearchRecycleViewAdapter(ArrayList()) { track ->
-            findNavController().navigate(
-                R.id.action_searchFragment_to_playerFragment,
-                PlayerFragment.createArgs(track)
-            )
+            showPlayerForTrack(track)
         }
         binding.searchHistoryRecyclerView.adapter = searchHistoryAdapter
         binding.searchHistoryRecyclerView.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
@@ -207,22 +193,6 @@ class SearchFragment: Fragment() {
         }
     }
 
-    //сохранение текста из строки ввода
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putBundle(KEY_VIEW_MODEL_STATE, viewModel.saveState())
-        outState.putInt(CURSOR_POSITION, binding.searchEditText.selectionStart)
-    }
-
-    //восстановление строки ввода из сохраненного Bundle
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        val viewModelState = savedInstanceState.getBundle(KEY_VIEW_MODEL_STATE)
-        viewModel.restoreState(viewModelState)
-        val cursorPosition = savedInstanceState.getInt(CURSOR_POSITION, 0)
-        binding.searchEditText.setSelection(cursorPosition.coerceIn(0, binding.searchEditText.text.length))
-    }
-
     //функция, отвечающая за отключение клавиатуры при нажатии на кнопку очистки строки ввода
     private fun hideKeyboard(view: View) {
         val inputManager =
@@ -254,10 +224,14 @@ class SearchFragment: Fragment() {
         handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
     }
 
+    private fun showPlayerForTrack(track: Track) {
+        val direction = SearchFragmentDirections.actionSearchFragmentToPlayerFragment(track)
+        findNavController().navigate(direction)
+    }
+
     companion object {
         private const val KEY_VIEW_MODEL_STATE = "VIEW_MODEL_STATE"
         private const val CURSOR_POSITION = "CURSOR_POSITION"
-        private const val TRACK_KEY = "TRACK"
         private const val CLICK_DEBOUNCE_DELAY = 1000L
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
 

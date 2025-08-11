@@ -17,7 +17,7 @@ lifecycleViewModel = "2.5.1"
 activityKtx = "1.6.1"
 koinAndroid = "3.3.0"
 viewpager2 = "1.1.0"
-navigation = "2.5.3"
+navigation = "2.9.3"
 fragment = "1.5.6"
 navigationFragmentKtx = "2.9.3"
 navigationUiKtx = "2.9.3"
@@ -51,4 +51,5 @@ androidx-navigation-ui-ktx = { group = "androidx.navigation", name = "navigation
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+navigation-safeargs-kotlin = { id = "androidx.navigation.safeargs.kotlin", version.ref = "navigation" }
 

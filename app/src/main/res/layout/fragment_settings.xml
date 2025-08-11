@@ -15,8 +15,6 @@
         android:background="?attr/colorPrimary"
         app:title="@string/text_settings"
         app:titleTextAppearance="@style/TextAppearanceAppbar"
-        app:navigationIcon="@drawable/arrow_back"
-        app:navigationIconTint="?attr/colorOnPrimary"
         />
 
 
