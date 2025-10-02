@@ -65,4 +65,7 @@ dependencies {
     implementation(libs.koin.android)
     implementation(libs.androidx.viewpager2)
     implementation(libs.fragment.ktx)
+    implementation(libs.lifecycle.runtime.ktx)
+    implementation(libs.coroutines.core)
+    implementation(libs.coroutines.android)
 }

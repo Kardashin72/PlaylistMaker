@@ -5,17 +5,16 @@ import com.practicum.playlistmaker.search.data.dto.Response
 import com.practicum.playlistmaker.search.data.dto.TracksSearchRequest
 
 class RetrofitNetworkClient(private val itunesService: ItunesApiService) : NetworkClient {
-   override fun doRequest(dto: Any): Response {
-        if (dto is TracksSearchRequest) {
-            return try {
-                val resp = itunesService.searchTracks(dto.expression).execute()
-                val body = resp.body() ?: Response()
-                body.apply { resultCode = resp.code() }
+    override suspend fun doRequest(dto: Any): Response {
+        return if (dto is TracksSearchRequest) {
+            try {
+                val resp = itunesService.searchTracks(dto.expression)
+                resp.apply { resultCode = 200 }
             } catch (e: Exception) {
                 Response().apply { resultCode = -1 }
             }
         } else {
-            return Response().apply { resultCode = 400 }
+            Response().apply { resultCode = 400 }
         }
     }
 }
