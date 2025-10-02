@@ -8,6 +8,11 @@ import com.practicum.playlistmaker.search.domain.api.SearchResult
 import com.practicum.playlistmaker.search.domain.api.TracksSearchHistoryInteractor
 import com.practicum.playlistmaker.search.domain.api.TracksSearchInteractor
 import com.practicum.playlistmaker.search.domain.model.Track
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 data class SearchScreenState(
     val tracks: List<Track> = emptyList(),
@@ -35,6 +40,8 @@ data class SearchScreenState(
         private var currentSearchText = ""
         private var hasFocus = false
 
+        private var searchJob: Job? = null
+
         fun searchTrack(query: String) {
             currentSearchText = query
             if (query.isBlank()) {
@@ -48,34 +55,45 @@ data class SearchScreenState(
                 searchQuery = query,
                 screenStatus = SearchScreenState.ScreenStatus.Loading
             ))
-            searchInteractor.searchTracks(query, object : TracksSearchInteractor.TracksConsumer {
-                override fun consume(result: SearchResult) {
-                    when (result) {
-                        is SearchResult.Success -> {
-                            val newState = if (result.tracks.isNotEmpty()) {
-                                SearchScreenState(
-                                    tracks = result.tracks,
-                                    searchQuery = query,
-                                    screenStatus = SearchScreenState.ScreenStatus.LoadSuccess
-                                )
-                            } else {
-                                SearchScreenState(
-                                    searchQuery = query,
-                                    screenStatus = SearchScreenState.ScreenStatus.NotFoundError
-                                )
-                            }
-                            _screenState.postValue(newState)
-                        }
-                        is SearchResult.ConnectionError -> {
-                            _screenState.postValue(
-                                SearchScreenState(
+            searchJob?.cancel()
+            searchJob = viewModelScope.launch {
+                searchInteractor.searchTracks(query)
+                    .catch {
+                        _screenState.postValue(
+                            SearchScreenState(
                                 searchQuery = query,
                                 screenStatus = SearchScreenState.ScreenStatus.ConnectionError
-                                ))
+                            )
+                        )
+                    }
+                    .collectLatest { result ->
+                        when (result) {
+                            is SearchResult.Success -> {
+                                val newState = if (result.tracks.isNotEmpty()) {
+                                    SearchScreenState(
+                                        tracks = result.tracks,
+                                        searchQuery = query,
+                                        screenStatus = SearchScreenState.ScreenStatus.LoadSuccess
+                                    )
+                                } else {
+                                    SearchScreenState(
+                                        searchQuery = query,
+                                        screenStatus = SearchScreenState.ScreenStatus.NotFoundError
+                                    )
+                                }
+                                _screenState.postValue(newState)
+                            }
+                            is SearchResult.ConnectionError -> {
+                                _screenState.postValue(
+                                    SearchScreenState(
+                                        searchQuery = query,
+                                        screenStatus = SearchScreenState.ScreenStatus.ConnectionError
+                                    )
+                                )
+                            }
                         }
                     }
-                }
-            })
+            }
         }
 
         fun clearSearchQuery() {

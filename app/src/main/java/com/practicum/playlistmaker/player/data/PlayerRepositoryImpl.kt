@@ -1,17 +1,23 @@
 package com.practicum.playlistmaker.player.data
 
 import android.media.MediaPlayer
-import android.os.Handler
-import android.os.Looper
 import com.practicum.playlistmaker.player.domain.api.PlayerRepository
 import com.practicum.playlistmaker.player.domain.model.PlayerState
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 
 
 class PlayerRepositoryImpl(
     private val mediaPLayer: MediaPlayer
 ) : PlayerRepository {
-    private val handler = Handler(Looper.getMainLooper())
-    private var timerRunnable: Runnable? = null
+    private val scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+    private var timerJob: Job? = null
     private var onStateChanged: ((PlayerState) -> Unit)? = null
 
     override fun preparePlayer(previewUrl: String, onStateChanged: (PlayerState) -> Unit) {
@@ -25,7 +31,7 @@ class PlayerRepositoryImpl(
             }
             setOnCompletionListener {
                 onStateChanged(PlayerState(PlayerState.PlayerStatus.Prepared, 0))
-                timerRunnable?.let { handler.removeCallbacks(it) }
+                timerJob?.cancel()
                 mediaPLayer.seekTo(0)
             }
         }
@@ -41,11 +47,12 @@ class PlayerRepositoryImpl(
     override fun pausePlayer() {
         mediaPLayer.pause()
         onStateChanged?.invoke(PlayerState(PlayerState.PlayerStatus.Paused, getCurrentPosition()))
-        timerRunnable?.let { handler.removeCallbacks(it) }
+        timerJob?.cancel()
     }
 
     override fun releasePlayer() {
-        timerRunnable?.let { handler.removeCallbacks(it) }
+        timerJob?.cancel()
+        scope.cancel()
         mediaPLayer.release()
     }
 
@@ -54,21 +61,22 @@ class PlayerRepositoryImpl(
     }
 
     private fun startTimer() {
-        timerRunnable = object : Runnable {
-            override fun run() {
+        timerJob?.cancel()
+        timerJob = scope.launch {
+            while (isActive) {
                 val currentPosition = getCurrentPosition()
-                if (mediaPLayer.isPlaying == true) {
+                if (mediaPLayer.isPlaying) {
                     onStateChanged?.invoke(PlayerState(PlayerState.PlayerStatus.Playing, currentPosition))
-                    handler.postDelayed(this, UPDATE_INTERVAL_MS)
+                    delay(UPDATE_INTERVAL_MS)
                 } else {
                     onStateChanged?.invoke(PlayerState(PlayerState.PlayerStatus.Paused, currentPosition))
+                    break
                 }
             }
         }
-        handler.postDelayed(timerRunnable!!, UPDATE_INTERVAL_MS)
     }
 
     companion object {
-        private const val UPDATE_INTERVAL_MS = 500L
+        private const val UPDATE_INTERVAL_MS = 300L
     }
 }
