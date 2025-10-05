@@ -22,7 +22,7 @@ class FavouriteTracksViewModel(
 
     private fun observeFavorites() {
         viewModelScope.launch {
-            favoritesInteractor.getFavoriteTracks().collectLatest { list ->
+            favoritesInteractor.getFavoriteTracks().collect { list ->
                 _tracks.postValue(list)
             }
         }
