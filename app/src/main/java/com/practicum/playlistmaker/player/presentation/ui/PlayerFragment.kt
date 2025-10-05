@@ -42,7 +42,7 @@ class PlayerFragment: Fragment() {
         val track = args.track
         previewUrl = track.previewUrl.toString()
         viewModel = getViewModel(parameters = { parametersOf(previewUrl) })
-
+        viewModel.setTrack(track)
         setupClickListeners()
         bindTrackData(track)
         observeViewModel()
@@ -70,6 +70,8 @@ class PlayerFragment: Fragment() {
         //обработка нажатия на кнопку плей/пауза
         binding.playButton.setOnClickListener { viewModel.startPlayer() }
         binding.pauseButton.setOnClickListener { viewModel.pausePlayer() }
+        binding.likeButton.setOnClickListener { viewModel.onLikeClicked() }
+        binding.likeButtonActive.setOnClickListener { viewModel.onLikeClicked() }
     }
 
     private fun observeViewModel() {
@@ -104,6 +106,10 @@ class PlayerFragment: Fragment() {
                 }
             }
         })
+        viewModel.isFavorite.observe(viewLifecycleOwner) { isFavorite ->
+            binding.likeButton.visibility = if (isFavorite) View.GONE else View.VISIBLE
+            binding.likeButtonActive.visibility = if (isFavorite) View.VISIBLE else View.GONE
+        }
     }
 
     private fun bindTrackData(track: Track) {

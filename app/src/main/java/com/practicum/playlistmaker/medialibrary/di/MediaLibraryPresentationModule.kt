@@ -5,7 +5,7 @@ import com.practicum.playlistmaker.medialibrary.presentation.viewmodel.Playlists
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
-val mediaLibraryModule = module {
-    viewModel { FavouriteTracksViewModel() }
+val mediaLibraryPresentationModule = module {
+    viewModel { FavouriteTracksViewModel(get()) }
     viewModel { PlaylistsViewModel() }
 }

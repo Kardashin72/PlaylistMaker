@@ -17,6 +17,7 @@ import com.practicum.playlistmaker.search.domain.model.Track
 import com.practicum.playlistmaker.search.presentation.viewmodel.SearchScreenState
 import com.practicum.playlistmaker.search.presentation.viewmodel.SearchViewModel
 import androidx.lifecycle.lifecycleScope
+import com.practicum.playlistmaker.core.presentation.utils.clickDebounce
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -29,9 +30,7 @@ class SearchFragment: Fragment() {
     private val binding get() = _binding!!
     private lateinit var searchAdapter: SearchRecycleViewAdapter
     private lateinit var searchHistoryAdapter: SearchRecycleViewAdapter
-    private var isClickAllowed = true
     private var searchJob: Job? = null
-    private var clickJob: Job? = null
     private val viewModel: SearchViewModel by viewModel()
 
     override fun onCreateView(
@@ -149,7 +148,7 @@ class SearchFragment: Fragment() {
         searchAdapter = SearchRecycleViewAdapter(viewModel.screenState.value?.tracks ?: emptyList()) { track ->
             viewModel.saveTrackToHistory(track)
             updateSearchHistory()
-            if (clickDebounce()) {
+            if (clickDebounce(lifecycleScope)) {
                 showPlayerForTrack(track)
             }
         }
@@ -158,7 +157,7 @@ class SearchFragment: Fragment() {
 
         //настройка адаптера и layoutManager для истории поиска
         searchHistoryAdapter = SearchRecycleViewAdapter(ArrayList()) { track ->
-            if (clickDebounce()) {
+            if (clickDebounce(lifecycleScope)) {
                 showPlayerForTrack(track)
             }
         }
@@ -211,19 +210,6 @@ class SearchFragment: Fragment() {
         viewModel.searchTrack(query)
     }
 
-    private fun clickDebounce() : Boolean {
-        val current = isClickAllowed
-        if (isClickAllowed) {
-            isClickAllowed = false
-            clickJob?.cancel()
-            clickJob = lifecycleScope.launch {
-                delay(CLICK_DEBOUNCE_DELAY)
-                isClickAllowed = true
-            }
-        }
-        return current
-    }
-
     private fun searchDebounce() {
         val text = binding.searchEditText.text
         searchJob?.cancel()
@@ -240,7 +226,6 @@ class SearchFragment: Fragment() {
     }
 
     companion object {
-        private const val CLICK_DEBOUNCE_DELAY = 1000L
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
     }
 }

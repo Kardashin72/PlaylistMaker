@@ -101,7 +101,7 @@
             android:id="@+id/playButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintEnd_toStartOf="@id/likeButton"
+            app:layout_constraintEnd_toStartOf="@id/likeButtonsBarrier"
             app:layout_constraintStart_toEndOf="@id/addToPlaylistButton"
             app:layout_constraintTop_toBottomOf="@id/playerArtistName"
             android:layout_marginTop="38dp"
@@ -114,7 +114,7 @@
             android:id="@+id/pauseButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintEnd_toStartOf="@id/likeButton"
+            app:layout_constraintEnd_toStartOf="@id/likeButtonsBarrier"
             app:layout_constraintStart_toEndOf="@id/addToPlaylistButton"
             app:layout_constraintTop_toBottomOf="@id/playerArtistName"
             android:layout_marginTop="38dp"
@@ -146,6 +146,13 @@
             android:background="@drawable/player_buttons_background"
             android:visibility="gone">
         </ImageButton>
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/likeButtonsBarrier"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="start"
+            app:constraint_referenced_ids="likeButton,likeButtonActive" />
 
         <TextView
             android:id="@+id/trackTimer"

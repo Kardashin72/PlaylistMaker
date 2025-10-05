@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/medialibrary_fragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -29,7 +30,16 @@
             android:text="@string/favourite_tracks_placeholder_text"
             android:textColor="?attr/colorOnPrimary"
             android:textFontWeight="400"
-            android:textSize="@dimen/search_messages_text_size"></TextView>
+            android:textSize="@dimen/search_messages_text_size"/>
     </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/favoriteTracksRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/main_margin_vertical"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        android:visibility="gone">
+    </androidx.recyclerview.widget.RecyclerView>
 </FrameLayout>
 

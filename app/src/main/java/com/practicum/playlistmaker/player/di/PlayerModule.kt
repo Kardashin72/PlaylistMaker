@@ -13,5 +13,5 @@ val playerModule = module {
     factory { MediaPlayer() }
     factory<PlayerRepository> { PlayerRepositoryImpl(get()) }
     factory<PlayerInteractor> { PlayerInteractorImpl(get()) }
-    viewModel { (previewUrl: String) -> PlayerViewModel(previewUrl, get()) }
+    viewModel { (previewUrl: String) -> PlayerViewModel(previewUrl, get(), get()) }
 }

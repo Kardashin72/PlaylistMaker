@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
+
 data class SearchScreenState(
     val tracks: List<Track> = emptyList(),
     val searchQuery: String = "",
