@@ -3,15 +3,16 @@ package com.practicum.playlistmaker.player.presentation.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.medialibrary.domain.api.FavoritesInteractor
+import com.practicum.playlistmaker.medialibrary.domain.api.PlaylistsInteractor
+import com.practicum.playlistmaker.medialibrary.domain.model.Playlist
 import com.practicum.playlistmaker.player.domain.api.PlayerInteractor
 import com.practicum.playlistmaker.player.domain.model.PlayerState
-import com.practicum.playlistmaker.medialibrary.domain.api.FavoritesInteractor
+import com.practicum.playlistmaker.player.domain.model.UiEvent
 import com.practicum.playlistmaker.search.domain.model.Track
-import androidx.lifecycle.viewModelScope
-import com.practicum.playlistmaker.medialibrary.domain.api.PlaylistsInteractor
 import kotlinx.coroutines.launch
-import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.medialibrary.domain.model.Playlist
 
 
 class PlayerViewModel(
@@ -22,18 +23,21 @@ class PlayerViewModel(
 ) : ViewModel() {
     private val _playerState = MutableLiveData<PlayerState>()
     val playerState: LiveData<PlayerState> = _playerState
-    private val _isFavorite = MutableLiveData<Boolean>(false)
-    val isFavorite: LiveData<Boolean> = _isFavorite
+    //пока не совсем понял, как уйти от этой переменной, в БД у нас только отмеченные треки (избранные, в плейлистах)
+    //а плеер работает со всеми результатами поиска, которые еще могут быть не отмечены, подумаю на каникулах
     private var currentTrack: Track? = null
-    private val _playlists = MutableLiveData<List<com.practicum.playlistmaker.medialibrary.domain.model.Playlist>>()
-    val playlists: LiveData<List<com.practicum.playlistmaker.medialibrary.domain.model.Playlist>> = _playlists
-    data class ToastEvent(val messageResId: Int, val playlistName: String, val shouldDismiss: Boolean)
-    private val _addToPlaylistResult = MutableLiveData<ToastEvent>()
-    val addToPlaylistResult: LiveData<ToastEvent> = _addToPlaylistResult
+
 
     init {
         interactor.preparePlayer(previewUrl) { state ->
-            _playerState.postValue(state)
+            val current = _playerState.value
+            _playerState.postValue(
+                state.copy(
+                    isFavorite = current?.isFavorite ?: false,
+                    playlists = current?.playlists ?: emptyList(),
+                    toastEvent = null
+                )
+            )
         }
     }
 
@@ -41,7 +45,9 @@ class PlayerViewModel(
         currentTrack = track
         viewModelScope.launch {
             favoritesInteractor.getFavoriteTracksId().collect { favoritesIds ->
-                _isFavorite.postValue(favoritesIds.contains(track.trackId))
+                val favoriteNow = favoritesIds.contains(track.trackId)
+                val current = _playerState.value ?: PlayerState()
+                _playerState.postValue(current.copy(isFavorite = favoriteNow))
             }
         }
     }
@@ -49,7 +55,8 @@ class PlayerViewModel(
     fun loadPlaylists() {
         viewModelScope.launch {
             playlistsInteractor.getAllPlaylists().collect { list ->
-                _playlists.postValue(list)
+                val current = _playerState.value ?: PlayerState()
+                _playerState.postValue(current.copy(playlists = list))
             }
         }
     }
@@ -59,11 +66,10 @@ class PlayerViewModel(
         viewModelScope.launch {
             val latest = playlistsInteractor.getPlaylistById(playlist.id.toLong()) ?: playlist
             val added = playlistsInteractor.addTrackToPlaylist(latest, track)
-            if (added) {
-                _addToPlaylistResult.postValue(ToastEvent(R.string.track_added_to_playlist, latest.name, true))
-            } else {
-                _addToPlaylistResult.postValue(ToastEvent(R.string.track_in_playlist_already, latest.name, false))
-            }
+            val event = if (added) UiEvent(R.string.track_added_to_playlist, latest.name, true)
+            else UiEvent(R.string.track_in_playlist_already, latest.name, false)
+            val current = _playerState.value ?: PlayerState()
+            _playerState.postValue(current.copy(toastEvent = event))
         }
     }
 
@@ -86,11 +92,16 @@ class PlayerViewModel(
     fun onLikeClicked() {
         val track = currentTrack ?: return
         viewModelScope.launch {
-            if (_isFavorite.value == true) {
+            if (_playerState.value?.isFavorite == true) {
                 favoritesInteractor.deleteTrackFromFavorites(track.trackId)
             } else {
                 favoritesInteractor.addTrackToFavorites(track)
             }
         }
+    }
+
+    fun onToastEventHandled() {
+        val current = _playerState.value ?: return
+        _playerState.postValue(current.copy(toastEvent = null))
     }
 }

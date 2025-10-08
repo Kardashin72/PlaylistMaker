@@ -21,20 +21,15 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.core.presentation.utils.dpToPx
 import com.practicum.playlistmaker.databinding.FragmentCreatePlaylistBinding
-import com.practicum.playlistmaker.medialibrary.domain.api.PlaylistsInteractor
-import com.practicum.playlistmaker.medialibrary.domain.model.Playlist
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import org.koin.android.ext.android.inject
+import com.practicum.playlistmaker.medialibrary.presentation.viewmodel.CreatePlaylistViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.File
 import java.io.FileOutputStream
 
 class CreatePlaylistFragment : Fragment() {
     private var _binding: FragmentCreatePlaylistBinding? = null
     private val binding get() = _binding!!
-    private val playlistsInteractor: PlaylistsInteractor by inject()
+    private val viewModel: CreatePlaylistViewModel by viewModel()
 
     private var pickedImageUri: Uri? = null
     private val pickMedia = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
@@ -62,6 +57,8 @@ class CreatePlaylistFragment : Fragment() {
         setupClickListeners()
         setupNameTextWatcher()
         setupSystemBackHandler()
+        setupSystemBackHandler()
+        observeViewModel()
     }
 
     private fun setupClickListeners() {
@@ -75,6 +72,24 @@ class CreatePlaylistFragment : Fragment() {
 
         binding.createPlaylistButton.setOnClickListener {
             savePlaylist()
+        }
+    }
+
+    private fun savePlaylist() {
+        val name = binding.playlistName.text?.toString()?.trim().orEmpty()
+        val description = binding.playlistDescription.text?.toString()?.trim().orEmpty()
+
+        val storedPath = pickedImageUri?.let { saveImageToPrivateStorage(it) }
+        viewModel.createPlaylist(name, description, storedPath)
+    }
+
+    private fun observeViewModel() {
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            event?.let {
+                Toast.makeText(requireContext(), getString(it.messageResId, it.playlistName), Toast.LENGTH_SHORT).show()
+                if (it.shouldClose) findNavController().popBackStack()
+                viewModel.onEventHandled()
+            }
         }
     }
 
@@ -118,29 +133,6 @@ class CreatePlaylistFragment : Fragment() {
     private fun setupNameTextWatcher() {
         binding.playlistName.doOnTextChanged { text, _, _, _ ->
             binding.createPlaylistButton.isEnabled = text?.isNotBlank() == true
-        }
-    }
-
-    private fun savePlaylist() {
-        val name = binding.playlistName.text?.toString()?.trim().orEmpty()
-        val description = binding.playlistDescription.text?.toString()?.trim().orEmpty()
-
-        val storedPath = pickedImageUri?.let { saveImageToPrivateStorage(it) }
-
-        val playlist = Playlist(
-            name = name,
-            description = description,
-            coverImagePath = storedPath,
-            trackIds = emptyList(),
-            tracksCount = 0
-        )
-
-        GlobalScope.launch(Dispatchers.IO) {
-            playlistsInteractor.addPlaylist(playlist)
-            withContext(Dispatchers.Main) {
-                Toast.makeText(requireContext(), getString(R.string.playlist_created_toast, name), Toast.LENGTH_SHORT).show()
-                findNavController().popBackStack()
-            }
         }
     }
 

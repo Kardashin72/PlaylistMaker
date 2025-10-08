@@ -1,6 +1,7 @@
 package com.practicum.playlistmaker.medialibrary.data
 
 import com.practicum.playlistmaker.medialibrary.data.db.AppDatabase
+import com.practicum.playlistmaker.medialibrary.data.db.converters.TracksInPlaylistsDbConverter
 import com.practicum.playlistmaker.medialibrary.domain.api.PlaylistsRepository
 import com.practicum.playlistmaker.medialibrary.domain.model.Playlist
 import com.practicum.playlistmaker.search.domain.model.Track
@@ -38,6 +39,8 @@ class PlaylistsRepositoryImpl(
             ?.let { PlaylistDbConverter.map(it) }
             ?: playlist
         if (current.trackIds.contains(track.trackId)) return false
+        //был уверен, что добавил эту строку... просто раз пока что нет необходимости читать из этой таблицы - упустил
+        database.playlistTracksDao().addTrack(TracksInPlaylistsDbConverter.map(track))
         val updatedIds = (current.trackIds + track.trackId).distinct()
         val updated = current.copy(
             trackIds = updatedIds,
