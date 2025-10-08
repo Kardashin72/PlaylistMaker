@@ -4,17 +4,17 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:layout_weight">1</item>
-        <item name="android:layout_marginHorizontal">@dimen/main_margin_horizontal</item>
-        <item name="android:layout_marginTop">@dimen/main_margin_vertical</item>
+        <item name="android:layout_marginHorizontal">@dimen/main_margin_horizontal_16dp</item>
+        <item name="android:layout_marginTop">@dimen/main_margin_vertical_10dp</item>
         <item name="android:backgroundTint">?attr/colorSecondary</item>
         <item name="android:textColor">?attr/colorOnSecondary</item>
-        <item name="android:textSize">@dimen/main_font_size</item>
+        <item name="android:textSize">@dimen/main_font_size_22sp</item>
         <item name="android:fontFamily">@font/ys_display_medium</item>
         <item name="android:textFontWeight">500</item>
         <item name="android:textAllCaps">false</item>
-        <item name="cornerRadius">@dimen/corner_radius</item>
+        <item name="cornerRadius">@dimen/corner_radius_16dp</item>
         <item name="iconGravity">textStart</item>
-        <item name="iconPadding">@dimen/icon_padding</item>
+        <item name="iconPadding">@dimen/icon_padding_10dp</item>
         <item name="iconTint">?attr/colorOnSecondary</item>
         <item name="android:foreground">?attr/selectableItemBackground</item>
     </style>
@@ -25,7 +25,7 @@
         <item name="android:backgroundTint">?attr/colorPrimary</item>
         <item name="android:textColor">?attr/colorOnPrimary</item>
         <item name="android:gravity">start|center_vertical</item>
-        <item name="android:textSize">@dimen/settings_buttons_font_size</item>
+        <item name="android:textSize">@dimen/settings_buttons_font_size_16sp</item>
         <item name="android:fontFamily">@font/ys_display_regular</item>
         <item name="android:textFontWeight">400</item>
         <item name="android:textAllCaps">false</item>
@@ -42,7 +42,7 @@
         <item name="android:backgroundTint">?attr/colorPrimary</item>
         <item name="android:textColor">?attr/colorOnPrimary</item>
         <item name="android:gravity">center</item>
-        <item name="android:textSize">@dimen/small_text_size</item>
+        <item name="android:textSize">@dimen/small_text_size_12sp</item>
         <item name="android:fontFamily">@font/ys_display_regular</item>
         <item name="android:textFontWeight">400</item>
         <item name="android:textAllCaps">false</item>
@@ -55,10 +55,10 @@
     <style name="EditTextStyle">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginHorizontal">@dimen/main_margin_horizontal</item>
-        <item name="android:paddingVertical">@dimen/main_margin_vertical</item>
+        <item name="android:layout_marginHorizontal">@dimen/main_margin_horizontal_16dp</item>
+        <item name="android:paddingVertical">@dimen/main_margin_vertical_10dp</item>
         <item name="cornerRadius">8dp</item>
-        <item name="android:drawablePadding">@dimen/main_margin_horizontal</item>
+        <item name="android:drawablePadding">@dimen/main_margin_horizontal_16dp</item>
         <item name="android:paddingHorizontal">10dp</item>
     </style>
 
@@ -71,7 +71,7 @@
 
     <style name="MaterialToolbarTextStyle">
         <item name="android:fontFamily">@font/ys_display_medium</item>
-        <item name="android:textSize">@dimen/main_font_size</item>
+        <item name="android:textSize">@dimen/main_font_size_22sp</item>
         <item name="android:fontWeight">500</item>
         <item name="android:textColor">?attr/colorOnPrimary</item>
     </style>
@@ -98,6 +98,20 @@
         <item name="android:fontFamily">@font/ys_display_medium</item>
         <item name="android:textSize">14sp</item>
         <item name="android:fontWeight">500</item>
+    </style>
+
+    <style name="RoundedImage8dp">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">8dp</item>
+    </style>
+
+    <style name="AppAlertDialogTheme" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="buttonBarPositiveButtonStyle">@style/AppAlertDialogButton</item>
+        <item name="buttonBarNegativeButtonStyle">@style/AppAlertDialogButton</item>
+    </style>
+
+    <style name="AppAlertDialogButton" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">?attr/colorOnPrimary</item>
     </style>
 
 

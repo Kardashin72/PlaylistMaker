@@ -1,0 +1,175 @@
+package com.practicum.playlistmaker.medialibrary.presentation.ui
+
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
+import android.os.Bundle
+import android.os.Environment
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.widget.doOnTextChanged
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.core.presentation.utils.dpToPx
+import com.practicum.playlistmaker.databinding.FragmentCreatePlaylistBinding
+import com.practicum.playlistmaker.medialibrary.domain.api.PlaylistsInteractor
+import com.practicum.playlistmaker.medialibrary.domain.model.Playlist
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.koin.android.ext.android.inject
+import java.io.File
+import java.io.FileOutputStream
+
+class CreatePlaylistFragment : Fragment() {
+    private var _binding: FragmentCreatePlaylistBinding? = null
+    private val binding get() = _binding!!
+    private val playlistsInteractor: PlaylistsInteractor by inject()
+
+    private var pickedImageUri: Uri? = null
+    private val pickMedia = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+        if (uri != null) {
+            pickedImageUri = uri
+            Glide.with(this)
+                .load(uri)
+                .centerCrop()
+                .transform(RoundedCorners(binding.playlistCoverImage.context.dpToPx(8)))
+                .into(binding.playlistCoverImage)
+        }
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentCreatePlaylistBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupClickListeners()
+        setupNameTextWatcher()
+        setupSystemBackHandler()
+    }
+
+    private fun setupClickListeners() {
+        binding.createPlaylistToolbar.setNavigationOnClickListener {
+            handleBackPressed()
+        }
+
+        binding.playlistCoverImage.setOnClickListener {
+            pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+        }
+
+        binding.createPlaylistButton.setOnClickListener {
+            savePlaylist()
+        }
+    }
+
+    private fun setupSystemBackHandler() {
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    handleBackPressed()
+                }
+            }
+        )
+    }
+
+    private fun handleBackPressed() {
+        if (hasUnsavedChanges()) {
+            showDiscardDialog()
+        } else {
+            findNavController().popBackStack()
+        }
+    }
+
+    private fun hasUnsavedChanges(): Boolean {
+        val nameNotBlank = binding.playlistName.text?.toString()?.isNotBlank() == true
+        val descriptionNotBlank = binding.playlistDescription.text?.toString()?.isNotBlank() == true
+        val imagePicked = pickedImageUri != null
+        return nameNotBlank || descriptionNotBlank || imagePicked
+    }
+
+    private fun showDiscardDialog() {
+        MaterialAlertDialogBuilder(requireContext(), R.style.AppAlertDialogTheme)
+            .setTitle(R.string.playlist_creation_exit_dialog_title)
+            .setMessage(R.string.playlist_creation_exit_dialog_message)
+            .setNegativeButton(R.string.playlist_creation_exit_dialog_cancel, null)
+            .setPositiveButton(R.string.playlist_creation_exit_dialog_confirm) { _, _ ->
+                findNavController().popBackStack()
+            }
+            .show()
+    }
+
+    private fun setupNameTextWatcher() {
+        binding.playlistName.doOnTextChanged { text, _, _, _ ->
+            binding.createPlaylistButton.isEnabled = text?.isNotBlank() == true
+        }
+    }
+
+    private fun savePlaylist() {
+        val name = binding.playlistName.text?.toString()?.trim().orEmpty()
+        val description = binding.playlistDescription.text?.toString()?.trim().orEmpty()
+
+        val storedPath = pickedImageUri?.let { saveImageToPrivateStorage(it) }
+
+        val playlist = Playlist(
+            name = name,
+            description = description,
+            coverImagePath = storedPath,
+            trackIds = emptyList(),
+            tracksCount = 0
+        )
+
+        GlobalScope.launch(Dispatchers.IO) {
+            playlistsInteractor.addPlaylist(playlist)
+            withContext(Dispatchers.Main) {
+                Toast.makeText(requireContext(), getString(R.string.playlist_created_toast, name), Toast.LENGTH_SHORT).show()
+                findNavController().popBackStack()
+            }
+        }
+    }
+
+    private fun saveImageToPrivateStorage(uri: Uri): String? {
+        return try {
+            val coversDir = File(requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES), "covers")
+            if (!coversDir.exists()) coversDir.mkdirs()
+
+            val fileName = "cover_${System.currentTimeMillis()}.jpg"
+            val outFile = File(coversDir, fileName)
+
+            val inputStream = requireContext().contentResolver.openInputStream(uri) ?: return null
+            val bitmap = inputStream.use { BitmapFactory.decodeStream(it) } ?: return null
+
+            FileOutputStream(outFile).use { output ->
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 30, output)
+                output.flush()
+            }
+            bitmap.recycle()
+            outFile.absolutePath
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
+    }
+}
+
+

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<style android:name="rounded_corners_image"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:name="cornerFamily">rounded</item>
+    <item android:name="cornerSize">8dp</item>
+</style>

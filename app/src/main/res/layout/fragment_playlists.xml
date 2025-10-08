@@ -9,6 +9,7 @@
     tools:context="com.practicum.playlistmaker.medialibrary.presentation.ui.PlaylistsFragment">
 
     <Button
+        android:id="@+id/createPlaylistButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
@@ -46,7 +47,16 @@
             android:gravity="center"
             android:textColor="?attr/colorOnPrimary"
             android:textFontWeight="400"
-            android:textSize="@dimen/search_messages_text_size"></TextView>
+            android:textSize="@dimen/search_messages_text_size_19sp"></TextView>
     </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/playlistsRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="76dp"
+        android:layout_marginHorizontal="@dimen/main_margin_horizontal_16dp"
+        android:clipToPadding="false"
+        android:visibility="gone"/>
 </FrameLayout>
 

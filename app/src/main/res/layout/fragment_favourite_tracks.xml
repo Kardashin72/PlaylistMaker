@@ -30,14 +30,14 @@
             android:text="@string/favourite_tracks_placeholder_text"
             android:textColor="?attr/colorOnPrimary"
             android:textFontWeight="400"
-            android:textSize="@dimen/search_messages_text_size"/>
+            android:textSize="@dimen/search_messages_text_size_19sp"/>
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/favoriteTracksRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="@dimen/main_margin_vertical"
+        android:layout_marginTop="@dimen/main_margin_vertical_10dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         android:visibility="gone">
     </androidx.recyclerview.widget.RecyclerView>

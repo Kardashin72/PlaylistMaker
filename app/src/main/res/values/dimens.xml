@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="main_margin_vertical">10dp</dimen>
-    <dimen name="main_margin_horizontal">16dp</dimen>
-    <dimen name="search_recycle_view_vertical_padding">8dp</dimen>
-    <dimen name="search_recycle_view_horizontal_padding">12dp</dimen>
-    <dimen name="corner_radius">16dp</dimen>
-    <dimen name="icon_padding">10dp</dimen>
-    <dimen name="main_font_size">22sp</dimen>
-    <dimen name="settings_buttons_font_size">16sp</dimen>
-    <dimen name="small_text_size">12sp</dimen>
-    <dimen name="search_messages_text_size">19sp</dimen>
-    <dimen name="boxCornerRadius">8dp</dimen>
+    <dimen name="main_margin_vertical_10dp">10dp</dimen>
+    <dimen name="main_margin_horizontal_16dp">16dp</dimen>
+    <dimen name="search_recycle_view_vertical_padding_8dp">8dp</dimen>
+    <dimen name="search_recycle_view_horizontal_padding_12dp">12dp</dimen>
+    <dimen name="corner_radius_16dp">16dp</dimen>
+    <dimen name="icon_padding_10dp">10dp</dimen>
+    <dimen name="main_font_size_22sp">22sp</dimen>
+    <dimen name="settings_buttons_font_size_16sp">16sp</dimen>
+    <dimen name="small_text_size_12sp">12sp</dimen>
+    <dimen name="search_messages_text_size_19sp">19sp</dimen>
+    <dimen name="boxCornerRadius_8dp">8dp</dimen>
     <item name="search_edit_text_weight" type="integer">0.5</item>
     <item name="settings_buttons_weight" type="integer">1</item>
 </resources>
