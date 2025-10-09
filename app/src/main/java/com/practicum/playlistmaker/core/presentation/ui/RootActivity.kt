@@ -24,7 +24,7 @@ class RootActivity : AppCompatActivity() {
 
         binding.bottomNavigationView.setupWithNavController(navController)
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            binding.bottomNavigationView.isVisible = destination.id != R.id.playerFragment && destination.id != R.id.createPlaylistFragment
+            binding.bottomNavigationView.isVisible = destination.id != R.id.playerFragment && destination.id != R.id.createPlaylistFragment && destination.id != R.id.playlistFragment
             binding.bottomNavigationView.menu.findItem(destination.id)?.isChecked = true
         }
 
