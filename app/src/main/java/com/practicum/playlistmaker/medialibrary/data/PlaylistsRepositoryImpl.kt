@@ -57,7 +57,6 @@ class PlaylistsRepositoryImpl(
                 list.filter { set.contains(it.trackId) }
                     .map { TracksInPlaylistsDbConverter.map(it) }
             }
-            .flowOn(Dispatchers.IO)
 
     override suspend fun removeTrackFromPlaylist(playlistId: Long, trackId: Int) {
         val current = database.playlistsDao().getPlaylistById(playlistId)?.let { PlaylistDbConverter.map(it) }

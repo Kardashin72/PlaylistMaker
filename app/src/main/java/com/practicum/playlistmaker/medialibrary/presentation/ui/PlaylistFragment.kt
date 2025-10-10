@@ -18,6 +18,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.imageview.ShapeableImageView
 import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.core.presentation.utils.dpToPx
 import com.practicum.playlistmaker.databinding.FragmentPlaylistBinding
 import com.practicum.playlistmaker.medialibrary.presentation.viewmodel.PlaylistViewModel
 import com.practicum.playlistmaker.search.presentation.ui.SearchRecycleViewAdapter
@@ -116,6 +117,14 @@ class PlaylistFragment : Fragment() {
         val bottomSheet = binding.root.findViewById<View>(R.id.tracks_bottom_sheet)
         tracksBottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
         bottomSheet.post {
+            //у меня на смартфоне, если делать как в макете фиксировано 266dp - треки наезжают на вышестоящие иконки,
+            //поэтому я ограничивал их пик 214dp, вот сейчас с такой реализацией у меня вроде как все норм
+            val parentHeight = binding.root.height
+            val iconsBottom = binding.menuButton.bottom
+            val safeMargin = requireContext().dpToPx(16)
+            val desiredPeek = requireContext().dpToPx(266)
+            val maxPeek = (parentHeight - iconsBottom - safeMargin).coerceAtLeast(0)
+            tracksBottomSheetBehavior.peekHeight = desiredPeek.coerceAtMost(maxPeek)
             tracksBottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         }
     }
@@ -220,7 +229,9 @@ class PlaylistFragment : Fragment() {
     }
 
     private fun sharePlaylist() {
-        val text = viewModel.buildShareText()
+        val count = viewModel.state.value.playlist?.tracksCount ?: 0
+        val tracksCountText = resources.getQuantityString(R.plurals.tracks_count, count, count)
+        val text = viewModel.buildShareText(tracksCountText)
         if (text == null) return
         if (text.isBlank()) {
             Toast.makeText(

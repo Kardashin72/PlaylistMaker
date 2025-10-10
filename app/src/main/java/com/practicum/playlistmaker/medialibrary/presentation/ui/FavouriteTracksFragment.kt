@@ -41,7 +41,7 @@ class FavouriteTracksFragment() : Fragment() {
 
     private fun setupRecyclerView() {
         favoritesAdapter = SearchRecycleViewAdapter(emptyList()) { track ->
-            if (clickDebounce(lifecycleScope)) {
+            if (clickDebounce()) {
                 showPlayerForTrack(track)
             }
         }

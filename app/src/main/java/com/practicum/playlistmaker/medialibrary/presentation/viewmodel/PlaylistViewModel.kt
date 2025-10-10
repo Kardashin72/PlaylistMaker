@@ -3,7 +3,7 @@ package com.practicum.playlistmaker.medialibrary.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.medialibrary.domain.api.PlaylistsInteractor
-import com.practicum.playlistmaker.medialibrary.domain.model.Playlist
+import com.practicum.playlistmaker.medialibrary.domain.model.PlaylistUiState
 import com.practicum.playlistmaker.search.domain.model.Track
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,15 +16,8 @@ class PlaylistViewModel(
     private val playlistId: Long
 ): ViewModel() {
 
-    data class UiState(
-        val isLoading: Boolean = true,
-        val playlist: Playlist? = null,
-        val durationMinutes: Int = 0,
-        val tracks: List<Track> = emptyList()
-    )
-
-    private val _state = MutableStateFlow(UiState())
-    val state: StateFlow<UiState> = _state.asStateFlow()
+    private val _state = MutableStateFlow(PlaylistUiState())
+    val state: StateFlow<PlaylistUiState> = _state.asStateFlow()
 
     init {
         load()
@@ -55,7 +48,7 @@ class PlaylistViewModel(
         viewModelScope.launch {
             val loaded = playlistsInteractor.getPlaylistById(playlistId)
             if (loaded == null) {
-                _state.value = UiState(isLoading = false, playlist = null, durationMinutes = 0)
+                _state.value = PlaylistUiState(isLoading = false, playlist = null, durationMinutes = 0)
                 return@launch
             }
             _state.value = _state.value.copy(isLoading = false, playlist = loaded)
@@ -81,14 +74,14 @@ class PlaylistViewModel(
         }
     }
 
-    fun buildShareText(): String? {
+    fun buildShareText(tracksCountText: String): String? {
         val current = _state.value
         val playlist = current.playlist ?: return null
         if (current.tracks.isEmpty()) return ""
         val sb = StringBuilder()
         sb.appendLine(playlist.name)
         if (playlist.description.isNotBlank()) sb.appendLine(playlist.description)
-        sb.appendLine(String.format("%d треков", playlist.tracksCount))
+        sb.appendLine(tracksCountText)
         current.tracks.forEachIndexed { index, track ->
             sb.appendLine("${index + 1}. ${track.artistName} - ${track.trackName} (${track.trackTime})")
         }

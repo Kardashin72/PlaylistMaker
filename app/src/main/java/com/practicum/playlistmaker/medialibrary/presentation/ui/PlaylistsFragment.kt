@@ -38,9 +38,9 @@ class PlaylistsFragment : Fragment() {
         adapter = PlaylistsRecyclerViewAdapter { playlist ->
             val action = com.practicum.playlistmaker.R.id.action_mediaLibraryFragment_to_playlistFragment
             val bundle = Bundle().apply {
-                putLong("playlistId", playlist.id)
+                putLong(KEY_PLAYLIST_ID, playlist.id)
             }
-            if(clickDebounce(lifecycleScope)) {
+            if(clickDebounce()) {
                 findNavController().navigate(action, bundle)
             }
         }
@@ -77,6 +77,7 @@ class PlaylistsFragment : Fragment() {
     }
 
     companion object {
+        const val KEY_PLAYLIST_ID = "playlistId"
         fun newInstance() = PlaylistsFragment().apply {
             arguments = Bundle()
         }

@@ -134,7 +134,15 @@
         android:orientation="vertical"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
         app:behavior_hideable="false"
-        app:behavior_peekHeight="216dp">
+        app:behavior_peekHeight="266dp">
+
+        <View
+            android:id="@+id/tracksGrabber"
+            android:layout_width="50dp"
+            android:layout_height="4dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bottom_sheet_grabber" />
 
         <TextView
             android:id="@+id/emptyTracksMessage"
@@ -152,7 +160,9 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="24dp"
-            tools:listitem="@layout/track_item" />
+            tools:listitem="@layout/track_item"
+            android:clipToPadding="false"
+            android:paddingTop="8dp"/>
     </LinearLayout>
 
     <View
@@ -171,11 +181,20 @@
         app:behavior_hideable="true"
         app:behavior_peekHeight="240dp"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+
+        <View
+            android:id="@+id/menuGrabber"
+            android:layout_width="50dp"
+            android:layout_height="4dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bottom_sheet_grabber" />
+
         <include
             android:id="@+id/menuPlaylistItem"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="16dp"
             android:layout_marginBottom="8dp"
             layout="@layout/playlist_bottom_sheet_item"/>
 
@@ -185,7 +204,7 @@
             android:layout_height="wrap_content"
             android:padding="16dp"
             android:text="@string/menu_share"
-            android:textColor="@color/YP_Black"/>
+            android:textColor="?attr/colorOnPrimary"/>
 
         <TextView
             android:id="@+id/menuEdit"
@@ -193,7 +212,7 @@
             android:layout_height="wrap_content"
             android:padding="16dp"
             android:text="@string/menu_edit"
-            android:textColor="@color/YP_Black"/>
+            android:textColor="?attr/colorOnPrimary"/>
 
         <TextView
             android:id="@+id/menuDelete"
@@ -201,7 +220,7 @@
             android:layout_height="wrap_content"
             android:padding="16dp"
             android:text="@string/menu_delete"
-            android:textColor="@color/YP_Black"/>
+            android:textColor="?attr/colorOnPrimary"/>
     </LinearLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
