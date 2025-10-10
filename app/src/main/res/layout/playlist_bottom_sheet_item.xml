@@ -11,7 +11,7 @@
         android:layout_width="45dp"
         android:layout_height="45dp"
         android:scaleType="centerCrop"
-        android:src="@drawable/playlist_cover_placeholder"
+        android:src="@drawable/placeholder"
         app:shapeAppearanceOverlay="@style/RoundedImage8dp" />
 
     <LinearLayout

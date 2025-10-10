@@ -97,13 +97,13 @@ class PlaylistFragment : Fragment() {
                 val menuItem = binding.root.findViewById<View>(R.id.menuPlaylistItem)
                 val menuCover = menuItem.findViewById<ShapeableImageView>(R.id.imageCover)
                 if (coverPath.isNullOrBlank()) {
-                    menuCover.setImageResource(R.drawable.playlist_cover_placeholder)
+                    menuCover.setImageResource(R.drawable.placeholder)
                 } else {
                     Glide.with(menuCover)
                         .load(coverPath)
                         .transform(CenterCrop())
-                        .placeholder(R.drawable.playlist_cover_placeholder)
-                        .error(R.drawable.playlist_cover_placeholder)
+                        .placeholder(R.drawable.placeholder)
+                        .error(R.drawable.placeholder)
                         .into(menuCover)
                 }
                 menuItem.findViewById<TextView>(R.id.textName).text = playlist?.name ?: ""
