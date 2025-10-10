@@ -14,6 +14,7 @@ import com.practicum.playlistmaker.medialibrary.presentation.viewmodel.Playlists
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
+import com.practicum.playlistmaker.core.presentation.utils.clickDebounce
 import com.practicum.playlistmaker.medialibrary.presentation.ui.adapter.PlaylistsRecyclerViewAdapter
 import kotlinx.coroutines.launch
 
@@ -34,7 +35,15 @@ class PlaylistsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        adapter = PlaylistsRecyclerViewAdapter()
+        adapter = PlaylistsRecyclerViewAdapter { playlist ->
+            val action = com.practicum.playlistmaker.R.id.action_mediaLibraryFragment_to_playlistFragment
+            val bundle = Bundle().apply {
+                putLong(KEY_PLAYLIST_ID, playlist.id)
+            }
+            if(clickDebounce()) {
+                findNavController().navigate(action, bundle)
+            }
+        }
         binding.playlistsRecyclerView.layoutManager = GridLayoutManager(requireContext(), 2)
         binding.playlistsRecyclerView.adapter = adapter
         binding.createPlaylistButton.setOnClickListener {
@@ -61,12 +70,14 @@ class PlaylistsFragment : Fragment() {
         }
     }
 
+
     override fun onDestroyView() {
         _binding = null
         super.onDestroyView()
     }
 
     companion object {
+        const val KEY_PLAYLIST_ID = "playlistId"
         fun newInstance() = PlaylistsFragment().apply {
             arguments = Bundle()
         }

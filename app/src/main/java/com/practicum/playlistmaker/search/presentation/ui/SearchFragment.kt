@@ -51,6 +51,8 @@ class SearchFragment: Fragment() {
     }
 
     override fun onDestroyView() {
+        searchJob?.cancel()
+        searchJob = null
         _binding = null
         super.onDestroyView()
     }
@@ -148,7 +150,7 @@ class SearchFragment: Fragment() {
         searchAdapter = SearchRecycleViewAdapter(viewModel.screenState.value?.tracks ?: emptyList()) { track ->
             viewModel.saveTrackToHistory(track)
             updateSearchHistory()
-            if (clickDebounce(lifecycleScope)) {
+            if (clickDebounce()) {
                 showPlayerForTrack(track)
             }
         }
@@ -157,7 +159,7 @@ class SearchFragment: Fragment() {
 
         //настройка адаптера и layoutManager для истории поиска
         searchHistoryAdapter = SearchRecycleViewAdapter(ArrayList()) { track ->
-            if (clickDebounce(lifecycleScope)) {
+            if (clickDebounce()) {
                 showPlayerForTrack(track)
             }
         }

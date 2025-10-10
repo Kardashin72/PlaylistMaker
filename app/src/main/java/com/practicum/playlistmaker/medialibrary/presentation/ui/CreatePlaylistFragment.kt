@@ -16,6 +16,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.practicum.playlistmaker.R
@@ -30,6 +31,7 @@ class CreatePlaylistFragment : Fragment() {
     private var _binding: FragmentCreatePlaylistBinding? = null
     private val binding get() = _binding!!
     private val viewModel: CreatePlaylistViewModel by viewModel()
+    private val args by navArgs<CreatePlaylistFragmentArgs>()
 
     private var pickedImageUri: Uri? = null
     private val pickMedia = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
@@ -59,6 +61,10 @@ class CreatePlaylistFragment : Fragment() {
         setupSystemBackHandler()
         setupSystemBackHandler()
         observeViewModel()
+        val editId = args.editPlaylistId
+        if (editId > 0) {
+            viewModel.loadForEdit(editId)
+        }
     }
 
     private fun setupClickListeners() {
@@ -71,16 +77,17 @@ class CreatePlaylistFragment : Fragment() {
         }
 
         binding.createPlaylistButton.setOnClickListener {
-            savePlaylist()
+            val name = binding.playlistName.text?.toString()?.trim().orEmpty()
+            val description = binding.playlistDescription.text?.toString()?.trim().orEmpty()
+            val storedPath = pickedImageUri?.let { saveImageToPrivateStorage(it) }
+
+            val mode = viewModel.state.value?.mode
+            if (mode == CreatePlaylistViewModel.Mode.EDIT) {
+                viewModel.saveEdited(name, description, storedPath)
+            } else {
+                viewModel.createPlaylist(name, description, storedPath)
+            }
         }
-    }
-
-    private fun savePlaylist() {
-        val name = binding.playlistName.text?.toString()?.trim().orEmpty()
-        val description = binding.playlistDescription.text?.toString()?.trim().orEmpty()
-
-        val storedPath = pickedImageUri?.let { saveImageToPrivateStorage(it) }
-        viewModel.createPlaylist(name, description, storedPath)
     }
 
     private fun observeViewModel() {
@@ -89,6 +96,31 @@ class CreatePlaylistFragment : Fragment() {
                 Toast.makeText(requireContext(), getString(it.messageResId, it.playlistName), Toast.LENGTH_SHORT).show()
                 if (it.shouldClose) findNavController().popBackStack()
                 viewModel.onEventHandled()
+            }
+        }
+        viewModel.state.observe(viewLifecycleOwner) { state ->
+            if (state.mode == CreatePlaylistViewModel.Mode.EDIT && state.editing != null) {
+                binding.createPlaylistToolbar.title = getString(R.string.edit_playlist)
+                binding.createPlaylistButton.text = getString(R.string.save)
+
+                val p = state.editing
+                binding.playlistName.setText(p.name)
+                binding.playlistDescription.setText(p.description)
+                binding.createPlaylistButton.isEnabled = p.name.isNotBlank()
+
+                val cover = p.coverImagePath
+                if (!cover.isNullOrBlank()) {
+                    Glide.with(this)
+                        .load(cover)
+                        .centerCrop()
+                        .transform(RoundedCorners(binding.playlistCoverImage.context.dpToPx(8)))
+                        .into(binding.playlistCoverImage)
+                } else {
+                    binding.playlistCoverImage.setImageResource(R.drawable.playlist_cover_placeholder)
+                }
+            } else {
+                binding.createPlaylistToolbar.title = getString(R.string.new_playlist)
+                binding.createPlaylistButton.text = getString(R.string.create_playlist)
             }
         }
     }
@@ -105,6 +137,11 @@ class CreatePlaylistFragment : Fragment() {
     }
 
     private fun handleBackPressed() {
+        val isEdit = viewModel.state.value?.mode == CreatePlaylistViewModel.Mode.EDIT
+        if (isEdit) {
+            findNavController().popBackStack()
+            return
+        }
         if (hasUnsavedChanges()) {
             showDiscardDialog()
         } else {

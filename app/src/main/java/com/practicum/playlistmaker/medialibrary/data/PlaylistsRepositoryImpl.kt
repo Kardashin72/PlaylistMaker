@@ -39,7 +39,7 @@ class PlaylistsRepositoryImpl(
             ?.let { PlaylistDbConverter.map(it) }
             ?: playlist
         if (current.trackIds.contains(track.trackId)) return false
-        //был уверен, что добавил эту строку... просто раз пока что нет необходимости читать из этой таблицы - упустил
+
         database.playlistTracksDao().addTrack(TracksInPlaylistsDbConverter.map(track))
         val updatedIds = (current.trackIds + track.trackId).distinct()
         val updated = current.copy(
@@ -48,5 +48,40 @@ class PlaylistsRepositoryImpl(
         )
         database.playlistsDao().updatePlaylist(PlaylistDbConverter.map(updated))
         return true
+    }
+
+    override fun getTracksByIds(ids: List<Int>): Flow<List<Track>> =
+        database.playlistTracksDao().getAllTracks()
+            .map { list ->
+                val set = ids.toSet()
+                list.filter { set.contains(it.trackId) }
+                    .map { TracksInPlaylistsDbConverter.map(it) }
+            }
+
+    override suspend fun removeTrackFromPlaylist(playlistId: Long, trackId: Int) {
+        val current = database.playlistsDao().getPlaylistById(playlistId)?.let { PlaylistDbConverter.map(it) }
+            ?: return
+        val updatedIds = current.trackIds.filter { it != trackId }
+        val updated = current.copy(trackIds = updatedIds, tracksCount = updatedIds.size)
+        database.playlistsDao().updatePlaylist(PlaylistDbConverter.map(updated))
+
+        //если ни в одном плейлисте не осталось данного трека - он удаляется из таблицы плейлистовых треков
+        val anyPlaylistContains = database.playlistsDao().getAllPlaylistsOnce()
+            .map { PlaylistDbConverter.map(it) }
+            .any { it.trackIds.contains(trackId) }
+        if (!anyPlaylistContains) database.playlistTracksDao().deleteTrackById(trackId)
+    }
+
+    override suspend fun deletePlaylist(playlistId: Long) {
+        database.playlistsDao().deletePlaylistById(playlistId)
+        val allPlaylists = database.playlistsDao().getAllPlaylistsOnce()
+            .map { PlaylistDbConverter.map(it) }
+        val remainingIds: Set<Int> = allPlaylists.flatMap { it.trackIds }.toSet()
+        val allTracks = database.playlistTracksDao().getAllTracksOnce()
+        allTracks.forEach { entity ->
+            if (!remainingIds.contains(entity.trackId)) {
+                database.playlistTracksDao().deleteTrackById(entity.trackId)
+            }
+        }
     }
 }

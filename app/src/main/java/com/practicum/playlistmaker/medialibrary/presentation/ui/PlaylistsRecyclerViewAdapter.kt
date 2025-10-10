@@ -43,13 +43,13 @@ class PlaylistsRecyclerViewAdapter(
 
             val coverPath = item.coverImagePath
             if (coverPath.isNullOrBlank()) {
-                imageCover.setImageResource(R.drawable.playlist_cover_placeholder)
+                imageCover.setImageResource(R.drawable.placeholder)
             } else {
                 Glide.with(itemView)
                     .load(coverPath)
                     .centerCrop()
-                    .placeholder(R.drawable.playlist_cover_placeholder)
-                    .error(R.drawable.playlist_cover_placeholder)
+                    .placeholder(R.drawable.placeholder)
+                    .error(R.drawable.placeholder)
                     .into(imageCover)
             }
 

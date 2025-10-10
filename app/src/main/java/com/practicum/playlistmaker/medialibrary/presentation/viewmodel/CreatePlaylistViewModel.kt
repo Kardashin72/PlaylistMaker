@@ -14,6 +14,14 @@ class CreatePlaylistViewModel(
 ): ViewModel() {
 
     data class UiEvent(val messageResId: Int, val playlistName: String, val shouldClose: Boolean)
+    data class UiState(
+        val mode: Mode = Mode.CREATE,
+        val editing: Playlist? = null
+    )
+    enum class Mode { CREATE, EDIT }
+
+    private val _state = MutableLiveData(UiState())
+    val state: LiveData<UiState> = _state
 
     private val _event = MutableLiveData<UiEvent?>()
     val event: LiveData<UiEvent?> = _event
@@ -34,5 +42,26 @@ class CreatePlaylistViewModel(
 
     fun onEventHandled() {
         _event.postValue(null)
+    }
+
+    fun loadForEdit(playlistId: Long) {
+        if (playlistId <= 0) return
+        viewModelScope.launch {
+            val existing = playlistsInteractor.getPlaylistById(playlistId) ?: return@launch
+            _state.postValue(UiState(mode = Mode.EDIT, editing = existing))
+        }
+    }
+
+    fun saveEdited(name: String, description: String, coverImagePath: String?) {
+        val current = _state.value?.editing ?: return
+        val updated = current.copy(
+            name = name,
+            description = description,
+            coverImagePath = coverImagePath ?: current.coverImagePath
+        )
+        viewModelScope.launch {
+            playlistsInteractor.updatePlaylist(updated)
+            _event.postValue(UiEvent(R.string.playlist_saved_toast, updated.name, true))
+        }
     }
 }

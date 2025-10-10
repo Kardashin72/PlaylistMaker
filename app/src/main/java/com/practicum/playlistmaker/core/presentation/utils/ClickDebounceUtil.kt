@@ -1,23 +1,16 @@
 package com.practicum.playlistmaker.core.presentation.utils
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import android.os.SystemClock
 
-private var isClickAllowed = true
-private var clickJob: Job? = null
+private var lastClickAtMs: Long = 0L
 private const val CLICK_DEBOUNCE_DELAY = 1000L
 
-fun clickDebounce(scope: CoroutineScope) : Boolean {
-    val current = isClickAllowed
-    if (isClickAllowed) {
-        isClickAllowed = false
-        clickJob?.cancel()
-        clickJob = scope.launch {
-            delay(CLICK_DEBOUNCE_DELAY)
-            isClickAllowed = true
-        }
+fun clickDebounce() : Boolean {
+    val now = SystemClock.elapsedRealtime()
+    return if (now - lastClickAtMs >= CLICK_DEBOUNCE_DELAY) {
+        lastClickAtMs = now
+        true
+    } else {
+        false
     }
-    return current
 }
