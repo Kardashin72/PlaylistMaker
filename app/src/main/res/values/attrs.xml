@@ -2,4 +2,9 @@
 <resources>
     <attr name="colorSearchBackground" format="color"></attr>
     <attr name="colorSearchHintText" format="color"></attr>
+
+    <declare-styleable name="PlaybackButtonView">
+        <attr name="playIcon" format="reference"/>
+        <attr name="pauseIcon" format="reference"/>
+    </declare-styleable>
 </resources>

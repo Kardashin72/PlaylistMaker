@@ -77,8 +77,13 @@ class PlayerFragment : Fragment() {
         //обработка нажатия на кнопку "назад"
         binding.audioPlayerTopbar.setNavigationOnClickListener { findNavController().navigateUp() }
         //обработка нажатия на кнопку плей/пауза
-        binding.playButton.setOnClickListener { playerViewModel.startPlayer() }
-        binding.pauseButton.setOnClickListener { playerViewModel.pausePlayer() }
+        binding.playbackButton.setOnClickListener {
+            if (binding.playbackButton.isPlaying()) {
+                playerViewModel.startPlayer()
+            } else {
+                playerViewModel.pausePlayer()
+            }
+        }
         binding.likeButton.setOnClickListener { playerViewModel.onLikeClicked() }
         binding.likeButtonActive.setOnClickListener { playerViewModel.onLikeClicked() }
         binding.addToPlaylistButton.setOnClickListener {
@@ -98,33 +103,23 @@ class PlayerFragment : Fragment() {
             binding.likeButtonActive.visibility = if (state.isFavorite) View.VISIBLE else View.GONE
             when (state.playerStatus) {
                 is PlayerState.PlayerStatus.Default -> {
-                    binding.apply {
-                        playButton.isEnabled = false
-                        playButton.isVisible = true
-                        pauseButton.visibility = View.INVISIBLE
-                    }
+                    binding.playbackButton.isEnabled = false
+                    binding.playbackButton.setPlaying(false)
                 }
 
                 is PlayerState.PlayerStatus.Prepared -> {
-                    binding.apply {
-                        playButton.isEnabled = true
-                        playButton.isVisible = true
-                        pauseButton.visibility = View.INVISIBLE
-                    }
+                    binding.playbackButton.isEnabled = true
+                    binding.playbackButton.setPlaying(false)
                 }
 
                 is PlayerState.PlayerStatus.Playing -> {
-                    binding.apply {
-                        playButton.visibility = View.INVISIBLE
-                        pauseButton.isVisible = true
-                    }
+                    binding.playbackButton.isEnabled = true
+                    binding.playbackButton.setPlaying(true)
                 }
 
                 is PlayerState.PlayerStatus.Paused -> {
-                    binding.apply {
-                        playButton.isVisible = true
-                        pauseButton.visibility = View.INVISIBLE
-                    }
+                    binding.playbackButton.isEnabled = true
+                    binding.playbackButton.setPlaying(false)
                 }
             }
         })

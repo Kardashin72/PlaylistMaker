@@ -89,34 +89,23 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/player_buttons_background"
                 android:src="@drawable/add_to_playlist_button"
-                app:layout_constraintBottom_toBottomOf="@id/playButton"
+                app:layout_constraintBottom_toBottomOf="@id/playbackButton"
                 app:layout_constraintStart_toEndOf="@id/leftGuidline"
-                app:layout_constraintTop_toTopOf="@id/playButton"/>
+                app:layout_constraintTop_toTopOf="@id/playbackButton"/>
 
-            <ImageButton
-                android:id="@+id/playButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+            <com.practicum.playlistmaker.player.presentation.ui.view.PlaybackButtonView
+                android:id="@+id/playbackButton"
+                android:layout_width="84dp"
+                android:layout_height="84dp"
                 android:layout_marginTop="38dp"
                 android:background="?attr/colorPrimary"
-                android:src="@drawable/play_button"
+                app:playIcon="@drawable/play_button"
+                app:pauseIcon="@drawable/pause_button"
                 app:layout_constraintEnd_toStartOf="@id/likeButtonsBarrier"
                 app:layout_constraintStart_toEndOf="@id/addToPlaylistButton"
-                app:layout_constraintTop_toBottomOf="@id/playerArtistName"
-                app:tint="?attr/colorOnPrimary"/>
+                app:layout_constraintTop_toBottomOf="@id/playerArtistName"/>
 
-            <ImageButton
-                android:id="@+id/pauseButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="38dp"
-                android:background="?attr/colorPrimary"
-                android:src="@drawable/pause_button"
-                android:visibility="gone"
-                app:layout_constraintEnd_toStartOf="@id/likeButtonsBarrier"
-                app:layout_constraintStart_toEndOf="@id/addToPlaylistButton"
-                app:layout_constraintTop_toBottomOf="@id/playerArtistName"
-                app:tint="?attr/colorOnPrimary"/>
+
 
             <ImageButton
                 android:id="@+id/likeButton"
@@ -124,9 +113,9 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/player_buttons_background"
                 android:src="@drawable/like_button"
-                app:layout_constraintBottom_toBottomOf="@id/playButton"
+                app:layout_constraintBottom_toBottomOf="@id/playbackButton"
                 app:layout_constraintEnd_toStartOf="@id/rightGuidline"
-                app:layout_constraintTop_toTopOf="@id/playButton"/>
+                app:layout_constraintTop_toTopOf="@id/playbackButton"/>
 
             <ImageButton
                 android:id="@+id/likeButtonActive"
@@ -135,9 +124,9 @@
                 android:background="@drawable/player_buttons_background"
                 android:src="@drawable/like_button_active"
                 android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="@id/playButton"
+                app:layout_constraintBottom_toBottomOf="@id/playbackButton"
                 app:layout_constraintEnd_toStartOf="@id/rightGuidline"
-                app:layout_constraintTop_toTopOf="@id/playButton"/>
+                app:layout_constraintTop_toTopOf="@id/playbackButton"/>
 
             <androidx.constraintlayout.widget.Barrier
                 android:id="@+id/likeButtonsBarrier"
@@ -157,7 +146,7 @@
                 android:textSize="14sp"
                 app:layout_constraintEnd_toStartOf="@id/rightGuidline"
                 app:layout_constraintStart_toEndOf="@id/leftGuidline"
-                app:layout_constraintTop_toBottomOf="@id/playButton"/>
+                app:layout_constraintTop_toBottomOf="@id/playbackButton"/>
 
             <TextView
                 android:id="@+id/trackTimeTitle"
