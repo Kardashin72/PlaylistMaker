@@ -5,6 +5,7 @@ import android.content.res.ColorStateList
 import android.graphics.Canvas
 import android.graphics.Rect
 import android.graphics.RectF
+import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.MotionEvent
@@ -12,6 +13,7 @@ import android.view.View
 import androidx.core.content.res.use
 import androidx.core.graphics.drawable.DrawableCompat
 import com.practicum.playlistmaker.R
+import com.google.android.material.R as MaterialR
 
 class PlaybackButtonView @JvmOverloads constructor(
     context: Context,
@@ -19,8 +21,8 @@ class PlaybackButtonView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
 
-    private var playDrawable = requireNotNull(context.getDrawable(R.drawable.play_button))
-    private var pauseDrawable = requireNotNull(context.getDrawable(R.drawable.pause_button))
+    private val playDrawable: Drawable
+    private val pauseDrawable: Drawable
 
     private val contentBounds = Rect()
     private val contentBoundsF = RectF()
@@ -28,12 +30,16 @@ class PlaybackButtonView @JvmOverloads constructor(
     private var isPlayingInternal: Boolean = false
 
     init {
+        var tmpPlay = requireNotNull(context.getDrawable(R.drawable.play_button))
+        var tmpPause = requireNotNull(context.getDrawable(R.drawable.pause_button))
         if (attrs != null) {
             context.obtainStyledAttributes(attrs, R.styleable.PlaybackButtonView).use { a ->
-                a.getDrawable(R.styleable.PlaybackButtonView_playIcon)?.let { playDrawable = it }
-                a.getDrawable(R.styleable.PlaybackButtonView_pauseIcon)?.let { pauseDrawable = it }
+                a.getDrawable(R.styleable.PlaybackButtonView_playIcon)?.let { tmpPlay = it }
+                a.getDrawable(R.styleable.PlaybackButtonView_pauseIcon)?.let { tmpPause = it }
             }
         }
+        playDrawable = tmpPlay
+        pauseDrawable = tmpPause
         applyThemeTint()
         isClickable = true
         isFocusable = true
@@ -41,7 +47,7 @@ class PlaybackButtonView @JvmOverloads constructor(
 
     private fun applyThemeTint() {
         val typedValue = TypedValue()
-        val resolved = context.theme.resolveAttribute(com.google.android.material.R.attr.colorOnPrimary, typedValue, true)
+        val resolved = context.theme.resolveAttribute(MaterialR.attr.colorOnPrimary, typedValue, true)
         if (resolved) {
             val tintColor = typedValue.data
             val tintList = ColorStateList.valueOf(tintColor)
