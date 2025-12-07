@@ -8,36 +8,44 @@ import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.medialibrary.domain.api.FavoritesInteractor
 import com.practicum.playlistmaker.medialibrary.domain.api.PlaylistsInteractor
 import com.practicum.playlistmaker.medialibrary.domain.model.Playlist
-import com.practicum.playlistmaker.player.domain.api.PlayerInteractor
 import com.practicum.playlistmaker.player.domain.model.PlayerState
 import com.practicum.playlistmaker.player.domain.model.UiEvent
+import com.practicum.playlistmaker.player.service.AudioPlayerServiceApi
 import com.practicum.playlistmaker.search.domain.model.Track
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 
 class PlayerViewModel(
     private val previewUrl: String,
-    private val interactor: PlayerInteractor,
     private val favoritesInteractor: FavoritesInteractor,
     private val playlistsInteractor: PlaylistsInteractor,
 ) : ViewModel() {
     private val _playerState = MutableLiveData<PlayerState>()
     val playerState: LiveData<PlayerState> = _playerState
-    //пока не совсем понял, как уйти от этой переменной, в БД у нас только отмеченные треки (избранные, в плейлистах)
-    //а плеер работает со всеми результатами поиска, которые еще могут быть не отмечены, подумаю на каникулах
     private var currentTrack: Track? = null
+    private var service: AudioPlayerServiceApi? = null
 
 
-    init {
-        interactor.preparePlayer(previewUrl) { state ->
-            val current = _playerState.value
-            _playerState.postValue(
-                state.copy(
-                    isFavorite = current?.isFavorite ?: false,
-                    playlists = current?.playlists ?: emptyList(),
-                    toastEvent = null
+    fun addService(serviceApi: AudioPlayerServiceApi) {
+        service = serviceApi
+        val track = currentTrack
+        service?.prepare(
+            previewUrl = previewUrl,
+            trackName = track?.trackName ?: "",
+            artistName = track?.artistName ?: ""
+        )
+        viewModelScope.launch {
+            serviceApi.playerState.collectLatest { state ->
+                val current = _playerState.value
+                _playerState.postValue(
+                    state.copy(
+                        isFavorite = current?.isFavorite ?: false,
+                        playlists = current?.playlists ?: emptyList(),
+                        toastEvent = null
+                    )
                 )
-            )
+            }
         }
     }
 
@@ -74,19 +82,15 @@ class PlayerViewModel(
     }
 
     fun startPlayer() {
-        interactor.startPlayer()
+        service?.play()
     }
 
     fun pausePlayer() {
-        interactor.pausePlayer()
-    }
-
-    fun getCurrentPosition(): Int {
-        return interactor.getCurrentPosition()
+        service?.pause()
     }
 
     fun releasePlayer() {
-        interactor.releasePlayer()
+        service?.release()
     }
 
     fun onLikeClicked() {
@@ -103,5 +107,18 @@ class PlayerViewModel(
     fun onToastEventHandled() {
         val current = _playerState.value ?: return
         _playerState.postValue(current.copy(toastEvent = null))
+    }
+
+    fun onUiStarted() {
+        service?.hideForegroundNotification()
+    }
+
+    fun onUiStopped(notificationsAllowed: Boolean) {
+        val playing = _playerState.value?.playerStatus is PlayerState.PlayerStatus.Playing
+        if (notificationsAllowed && playing) {
+            service?.showForegroundNotification()
+        } else {
+            service?.hideForegroundNotification()
+        }
     }
 }
