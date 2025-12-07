@@ -1,11 +1,23 @@
 package com.practicum.playlistmaker.player.presentation.ui
 
+import android.Manifest
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
+import android.content.pm.PackageManager
+import android.os.Build
+import android.os.IBinder
+import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat
+import com.practicum.playlistmaker.player.service.AudioPlayerService
+import com.practicum.playlistmaker.player.service.AudioPlayerServiceApi
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.view.isVisible
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -36,6 +48,31 @@ class PlayerFragment : Fragment() {
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<View>
     private lateinit var bottomSheetAdapter: PlaylistsBottomSheetAdapter
 
+    private var serviceBound: Boolean = false
+    private var serviceApi: AudioPlayerServiceApi? = null
+
+    private var serviceIntent: Intent? = null
+
+    private val requestNotificationPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { _: Boolean ->
+        bindAudioService()
+    }
+
+    private val serviceConnection = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            val binder = service as? AudioPlayerService.LocalBinder ?: return
+            serviceApi = binder.getService()
+            playerViewModel.addService(serviceApi!!)
+            serviceBound = true
+        }
+
+        override fun onServiceDisconnected(name: ComponentName?) {
+            serviceApi = null
+            serviceBound = false
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -55,16 +92,38 @@ class PlayerFragment : Fragment() {
         bindTrackData(track)
         observeViewModel()
         setupBottomSheetRecyclerView()
+
+        val intent = Intent(requireContext(), AudioPlayerService::class.java).apply {
+            putExtra(AudioPlayerService.EXTRA_PREVIEW_URL, previewUrl)
+            putExtra(AudioPlayerService.EXTRA_TRACK_NAME, track.trackName)
+            putExtra(AudioPlayerService.EXTRA_ARTIST_NAME, track.artistName)
+        }
+        serviceIntent = intent
+
+        if (Build.VERSION.SDK_INT >= 33 && !areNotificationsAllowed()) {
+            requestNotificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        } else {
+            bindAudioService()
+        }
     }
 
-    override fun onPause() {
-        super.onPause()
-        playerViewModel.pausePlayer()
+    override fun onStart() {
+        super.onStart()
+        playerViewModel.onUiStarted()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        playerViewModel.onUiStopped(areNotificationsAllowed())
     }
 
     //"очистка" плеера при закрытии фрагмента
     override fun onDestroyView() {
         super.onDestroyView()
+        if (serviceBound) {
+            requireContext().unbindService(serviceConnection)
+            serviceBound = false
+        }
         _binding = null
     }
 
@@ -191,5 +250,21 @@ class PlayerFragment : Fragment() {
             primaryGenreName.text = track?.primaryGenreName
             country.text = track?.country
         }
+    }
+
+    private fun areNotificationsAllowed(): Boolean {
+        return if (Build.VERSION.SDK_INT >= 33) {
+            ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED
+        } else {
+            NotificationManagerCompat.from(requireContext()).areNotificationsEnabled()
+        }
+    }
+
+    private fun bindAudioService() {
+        val intent = serviceIntent ?: return
+        requireContext().bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
     }
 }
