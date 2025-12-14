@@ -7,11 +7,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
 import com.practicum.playlistmaker.App
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.databinding.FragmentSettingsBinding
 import com.practicum.playlistmaker.settings.presentation.viewmodel.SettingsAction
+import com.practicum.playlistmaker.settings.presentation.viewmodel.SettingsScreenState
 import com.practicum.playlistmaker.settings.presentation.viewmodel.SettingsViewModel
 import com.practicum.playlistmaker.share.domain.model.ContactSupportData
 import com.practicum.playlistmaker.share.domain.model.ShareAppData
@@ -19,54 +23,37 @@ import com.practicum.playlistmaker.share.domain.model.UserAgreementData
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SettingsFragment : Fragment() {
-    private var _binding: FragmentSettingsBinding? = null
-    private val binding get() = _binding!!
     private val viewModel: SettingsViewModel by viewModel()
-    private var isUserChangingSwitch = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View? {
-        _binding = FragmentSettingsBinding.inflate(inflater, container, false)
-        return binding.root
+    ): View {
+        return ComposeView(requireContext()).apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                val state: SettingsScreenState by viewModel.screenState.observeAsState(
+                    initial = SettingsScreenState()
+                )
+
+                SettingsScreen(
+                    state = state,
+                    onThemeToggle = { isDark ->
+                        (requireContext().applicationContext as App).switchTheme(isDark)
+                        viewModel.setDarkTheme(isDark)
+                    },
+                    onShareClick = { viewModel.shareApp() },
+                    onSupportClick = { viewModel.contactSupport() },
+                    onUserAgreementClick = { viewModel.openUserAgreement() },
+                )
+            }
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        isUserChangingSwitch = true
-        setupClickListeners()
-        observeViewModel()
-    }
-
-    override fun onDestroyView() {
-        _binding = null
-        super.onDestroyView()
-    }
-
-    private fun setupClickListeners() {
-        //обработка нажатия на свитчер темы
-        binding.switchThemeButton.setOnCheckedChangeListener { _, checked ->
-            if (!isUserChangingSwitch) return@setOnCheckedChangeListener
-            (requireContext().applicationContext as App).switchTheme(checked)
-            viewModel.setDarkTheme(checked)
-        }
-
-        //обработка нажатия на кнопку "поделиться"
-        binding.shareButton.setOnClickListener {
-            viewModel.shareApp()
-        }
-
-        //обработка нажатия на кнопку "написать в поддержку"
-        binding.supportButton.setOnClickListener {
-            viewModel.contactSupport()
-        }
-
-        //обработка нажатия на кнопку "пользовательское соглашение"
-        binding.userAgreementButton.setOnClickListener {
-            viewModel.openUserAgreement()
-        }
+        observeViewModelActions()
     }
 
     private fun shareApp(data: ShareAppData) {
@@ -100,13 +87,7 @@ class SettingsFragment : Fragment() {
         startActivity(userAgreementIntent)
     }
 
-    private fun observeViewModel() {
-        viewModel.screenState.observe(viewLifecycleOwner) { state ->
-            isUserChangingSwitch = false
-            binding.switchThemeButton.isChecked = state.isDarkTheme
-            isUserChangingSwitch = true
-        }
-
+    private fun observeViewModelActions() {
         viewModel.action.observe(viewLifecycleOwner) { action ->
             when (action) {
                 is SettingsAction.ShareApp -> shareApp(action.data)
