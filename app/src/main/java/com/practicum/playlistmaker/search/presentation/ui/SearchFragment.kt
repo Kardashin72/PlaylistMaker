@@ -63,14 +63,15 @@ class SearchFragment : Fragment() {
                         viewModel.updateSearchText(text)
                         if (text.isEmpty()) {
                             searchJob?.cancel()
-                            viewModel.clearSearchQuery()
                         } else {
                             searchDebounce(text)
                         }
                     },
                     onSearchAction = {
                         searchJob?.cancel()
-                        viewModel.searchTrack(queryText)
+                        if (queryText.isNotBlank()) {
+                            viewModel.searchTrack(queryText)
+                        }
                     },
                     onClearQueryClick = {
                         searchJob?.cancel()
@@ -82,7 +83,9 @@ class SearchFragment : Fragment() {
                         history = emptyList()
                     },
                     onRefreshClick = {
-                        viewModel.searchTrack(queryText)
+                        if (queryText.isNotBlank()) {
+                            viewModel.searchTrack(queryText)
+                        }
                     },
                     onTrackClick = { track ->
                         viewModel.saveTrackToHistory(track)
@@ -94,7 +97,10 @@ class SearchFragment : Fragment() {
                         if (clickDebounce()) {
                             showPlayerForTrack(track)
                         }
-                    }
+                    },
+                    onTextFieldFocusChange = { hasFocus ->
+                        viewModel.editTextFocusChange(hasFocus)
+                    },
                 )
             }
         }

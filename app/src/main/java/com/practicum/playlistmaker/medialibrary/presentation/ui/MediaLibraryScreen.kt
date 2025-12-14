@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -111,6 +112,7 @@ fun MediaLibraryScreen(
                         color = themeColor(attrRes = MaterialR.attr.colorOnPrimary),
                     )
                 },
+                divider = {},
             ) {
                 tabs.forEachIndexed { index, title ->
                     Tab(
@@ -195,8 +197,8 @@ private fun PlaylistsTabContent(
                 .align(Alignment.CenterHorizontally)
                 .padding(top = 24.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = themeColor(attrRes = MaterialR.attr.colorSecondary),
-                contentColor = themeColor(attrRes = MaterialR.attr.colorOnSecondary),
+                containerColor = themeColor(attrRes = MaterialR.attr.colorOnPrimary),
+                contentColor = themeColor(attrRes = MaterialR.attr.colorPrimary),
             ),
         ) {
             Text(text = stringResource(id = R.string.new_playlist))
@@ -230,13 +232,13 @@ private fun PlaylistItem(
     playlist: Playlist,
     onClick: () -> Unit,
 ) {
-    androidx.compose.foundation.layout.Column(
+    Column(
         modifier = Modifier
             .padding(8.dp)
             .fillMaxWidth()
             .clickable(onClick = onClick),
     ) {
-        androidx.compose.foundation.Image(
+        Image(
             painter = painterResource(id = R.drawable.placeholder),
             contentDescription = null,
             modifier = Modifier
@@ -247,6 +249,7 @@ private fun PlaylistItem(
         Text(
             text = playlist.name,
             style = MaterialTheme.typography.bodyLarge,
+            color = themeColor(attrRes = MaterialR.attr.colorOnPrimary),
         )
         Text(
             text = pluralStringResource(
@@ -255,6 +258,7 @@ private fun PlaylistItem(
                 playlist.tracksCount
             ),
             style = MaterialTheme.typography.bodyMedium,
+            color = themeColor(attrRes = MaterialR.attr.colorSecondaryVariant),
         )
     }
 }
@@ -273,11 +277,13 @@ private fun Placeholder(
         Image(
             painter = painterResource(id = R.drawable.not_found_image),
             contentDescription = null,
+            modifier = Modifier.size(120.dp),
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
             text = text,
             style = MaterialTheme.typography.titleMedium,
+            color = themeColor(attrRes = MaterialR.attr.colorOnPrimary),
             textAlign = TextAlign.Center,
         )
     }

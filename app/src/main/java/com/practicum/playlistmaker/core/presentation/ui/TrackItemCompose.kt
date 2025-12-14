@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -25,6 +24,8 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.practicum.playlistmaker.R
+import com.google.android.material.R as MaterialR
+import com.practicum.playlistmaker.core.presentation.ui.themeColor
 import com.practicum.playlistmaker.search.domain.model.Track
 
 @Composable
@@ -66,7 +67,7 @@ fun TrackItem(
                 text = track.trackName,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                color = androidx.compose.material3.MaterialTheme.colorScheme.onBackground,
+                color = themeColor(attrRes = MaterialR.attr.colorOnPrimary),
                 fontSize = 16.sp,
             )
 
@@ -77,14 +78,14 @@ fun TrackItem(
                     text = track.artistName,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    color = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = themeColor(attrRes = MaterialR.attr.colorSecondaryVariant),
                     fontSize = 11.sp,
                     modifier = Modifier.weight(1f),
                 )
 
                 Text(
                     text = track.trackTime,
-                    color = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = themeColor(attrRes = MaterialR.attr.colorSecondaryVariant),
                     fontSize = 11.sp,
                     modifier = Modifier.padding(start = 8.dp),
                 )
@@ -92,9 +93,9 @@ fun TrackItem(
         }
 
         Icon(
-            painter = painterResource(id = com.practicum.playlistmaker.R.drawable.arrow_forward_icon),
+            painter = painterResource(id = R.drawable.arrow_forward_icon),
             contentDescription = null,
-            tint = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant,
+            tint = themeColor(attrRes = MaterialR.attr.colorSecondaryVariant),
             modifier = Modifier
                 .padding(start = 8.dp)
         )

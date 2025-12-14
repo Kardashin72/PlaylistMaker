@@ -10,12 +10,17 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -28,27 +33,25 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldColors
-import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.practicum.playlistmaker.R
-import com.google.android.material.R as MaterialR
-import com.practicum.playlistmaker.core.presentation.ui.themeColor
 import com.practicum.playlistmaker.core.presentation.ui.components.TrackItem
+import com.practicum.playlistmaker.core.presentation.ui.themeColor
 import com.practicum.playlistmaker.search.domain.model.Track
 import com.practicum.playlistmaker.search.presentation.viewmodel.SearchScreenState
+import com.google.android.material.R as MaterialR
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,6 +66,7 @@ fun SearchScreen(
     onRefreshClick: () -> Unit,
     onTrackClick: (Track) -> Unit,
     onHistoryTrackClick: (Track) -> Unit,
+    onTextFieldFocusChange: (Boolean) -> Unit,
 ) {
     Scaffold(
         containerColor = themeColor(attrRes = MaterialR.attr.colorPrimary),
@@ -88,13 +92,15 @@ fun SearchScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 16.dp, vertical = 16.dp),
+                    .padding(horizontal = 16.dp, vertical = 16.dp)
+                    .imePadding(),
             ) {
                 SearchTextField(
                     value = queryText,
                     onValueChange = onQueryChange,
                     onSearchAction = onSearchAction,
                     onClearClick = onClearQueryClick,
+                    onFocusChange = onTextFieldFocusChange,
                 )
 
                 if (state.isSearchHistoryVisible && history.isNotEmpty()) {
@@ -116,7 +122,8 @@ fun SearchScreen(
 
             if (state.screenStatus is SearchScreenState.ScreenStatus.Loading) {
                 CircularProgressIndicator(
-                    modifier = Modifier.align(Alignment.Center)
+                    modifier = Modifier.align(Alignment.Center),
+                    color = colorResource(id = R.color.YP_Blue),
                 )
             }
         }
@@ -131,10 +138,13 @@ private fun SearchTextField(
     onValueChange: (String) -> Unit,
     onSearchAction: () -> Unit,
     onClearClick: () -> Unit,
+    onFocusChange: (Boolean) -> Unit,
 ) {
     val backgroundColor = themeColor(attrRes = R.attr.colorSearchBackground)
     val hintColor = themeColor(attrRes = R.attr.colorSearchHintText)
-    val textColor = themeColor(attrRes = MaterialR.attr.colorOnPrimary)
+    val textColor = themeColor(attrRes = MaterialR.attr.colorOnSecondary)
+    val focusManager = LocalFocusManager.current
+    val keyboard = LocalSoftwareKeyboardController.current
 
     Box(
         modifier = Modifier
@@ -183,11 +193,16 @@ private fun SearchTextField(
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                     keyboardActions = KeyboardActions(onSearch = { onSearchAction() }),
                     cursorBrush = SolidColor(colorResource(id = R.color.YP_Blue)),
+                    modifier = Modifier.onFocusChanged { onFocusChange(it.isFocused) },
                 )
             }
 
             if (value.isNotEmpty()) {
-                IconButton(onClick = onClearClick) {
+                IconButton(onClick = {
+                    onClearClick()
+                    focusManager.clearFocus()
+                    keyboard?.hide()
+                }) {
                     Icon(
                         painter = painterResource(id = R.drawable.cross),
                         contentDescription = null,
@@ -206,20 +221,24 @@ private fun SearchHistorySection(
     onItemClick: (Track) -> Unit,
 ) {
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
     ) {
         Text(
             text = stringResource(id = R.string.search_history_title),
             style = MaterialTheme.typography.titleMedium,
+            color = themeColor(attrRes = MaterialR.attr.colorOnPrimary),
             modifier = Modifier.align(Alignment.CenterHorizontally),
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
+        val maxHeight = LocalConfiguration.current.screenHeightDp.dp / 3
+
         LazyColumn(
             modifier = Modifier
-                .weight(1f, fill = false)
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .heightIn(max = maxHeight),          // как в XML, фиксированная высота
             contentPadding = PaddingValues(vertical = 4.dp),
         ) {
             items(history, key = { it.trackId }) { track ->
@@ -235,6 +254,10 @@ private fun SearchHistorySection(
         Button(
             onClick = onClearHistoryClick,
             modifier = Modifier.align(Alignment.CenterHorizontally),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = themeColor(attrRes = MaterialR.attr.colorOnPrimary),
+                contentColor = themeColor(attrRes = MaterialR.attr.colorPrimary),
+            ),
         ) {
             Text(text = stringResource(id = R.string.search_history_clear))
         }

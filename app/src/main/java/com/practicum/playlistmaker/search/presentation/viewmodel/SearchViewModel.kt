@@ -34,6 +34,10 @@ data class SearchScreenState(
         private val searchHistoryInteractor: TracksSearchHistoryInteractor,
         private val searchInteractor: TracksSearchInteractor,
     ) : ViewModel() {
+
+        init {
+            android.util.Log.d("SearchVM", "init SearchViewModel: ${hashCode()}")
+        }
         //LiveData для сохранения состояния экрана
         private val _screenState = MutableLiveData<SearchScreenState>(SearchScreenState())
         val screenState: LiveData<SearchScreenState> = _screenState
@@ -104,6 +108,12 @@ data class SearchScreenState(
 
         fun updateSearchText(text: String) {
             currentSearchText = text
+            val current = _screenState.value ?: SearchScreenState()
+            _screenState.postValue(
+                current.copy(
+                    searchQuery = text
+                )
+            )
             searchHistoryVisibilityControl()
         }
 
@@ -130,12 +140,12 @@ data class SearchScreenState(
         fun saveState(): Bundle {
             val currentState = _screenState.value ?: SearchScreenState()
             return Bundle().apply {
-                putString("search_query", currentState.searchQuery)
-                putString("screen_status", currentState.screenStatus.javaClass.simpleName)
+                putString(KEY_SEARCH_QUERY, currentState.searchQuery)
+                putString(KEY_SCREEN_STATUS, currentState.screenStatus.javaClass.simpleName)
                 putBoolean(KEY_SEARCH_HISTORY_VISIBLE, currentState.isSearchHistoryVisible)
                 // Сохраняем треки только если они есть
                 if (currentState.tracks.isNotEmpty()) {
-                    putParcelableArrayList("tracks", ArrayList(currentState.tracks))
+                    putParcelableArrayList(KEY_TRACKS, ArrayList(currentState.tracks))
                 }
             }
         }
@@ -168,15 +178,21 @@ data class SearchScreenState(
         }
 
         private fun showSearchHistory() {
-            _screenState.postValue(SearchScreenState(
-                isSearchHistoryVisible = true
-            ))
+            val current = _screenState.value ?: SearchScreenState()
+            _screenState.postValue(
+                current.copy(
+                    isSearchHistoryVisible = true
+                )
+            )
         }
 
         private fun hideSearchHistory() {
-            _screenState.postValue(SearchScreenState(
-                isSearchHistoryVisible = false
-            ))
+            val current = _screenState.value ?: SearchScreenState()
+            _screenState.postValue(
+                current.copy(
+                    isSearchHistoryVisible = false
+                )
+            )
         }
 
         private fun searchHistoryVisibilityControl() {
